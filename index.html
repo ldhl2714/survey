@@ -1,0 +1,2044 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>설문조사</title>
+    <style>
+    body {
+        font-family: 'Malgun Gothic', 'Noto Sans KR', sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background: #f8fafc;
+        line-height: 1.6;
+    }
+
+    .container {
+        background: white;
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .progress-bar {
+        background: #e5e7eb;
+        height: 8px;
+        border-radius: 10px;
+        margin: 20px 0 30px 0;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        background: linear-gradient(90deg, #2563eb, #3b82f6);
+        height: 100%;
+        transition: width 0.3s ease;
+    }
+
+    .progress-text {
+        text-align: center;
+        color: #64748b;
+        font-size: 0.9em;
+        margin-bottom: 20px;
+    }
+
+    .page {
+        display: none;
+    }
+
+    .page.active {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .section-title {
+        font-size: 1.1em;
+        font-weight: 700;
+        margin-bottom: 15px;
+        color: #1f2937;
+    }
+
+    .consent-summary {
+        background: #f1f5f9;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border-left: 4px solid #2563eb;
+        line-height: 1.8;
+    }
+
+    .detail-toggle {
+        margin: 20px 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .detail-toggle input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+    }
+
+    .detail-toggle label {
+        cursor: pointer;
+        font-weight: 500;
+    }
+
+    .consent-detail {
+        display: none;
+        background: #f9fafb;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 15px 0;
+        border: 1px solid #e5e7eb;
+        line-height: 1.8;
+    }
+
+    .consent-detail.show {
+        display: block;
+    }
+
+    .question {
+        margin-bottom: 25px;
+    }
+
+    .question-text {
+        font-weight: 500;
+        margin-bottom: 15px;
+    }
+
+    .required {
+        color: #ef4444;
+    }
+
+    .radio-horizontal {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-top: 15px;
+    }
+
+    .radio-horizontal label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 30px;
+        border: 2px solid #e5e7eb;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .radio-horizontal label:hover {
+        border-color: #2563eb;
+        background: #f1f5f9;
+    }
+
+    .radio-horizontal input[type="radio"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+        width: 100%;
+        max-width: 300px;
+        padding: 10px;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        font-size: 1em;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus {
+        outline: none;
+        border-color: #2563eb;
+    }
+
+    .gender-group {
+        display: flex;
+        gap: 10px;
+    }
+
+    .gender-group label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 20px;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .gender-group label:hover {
+        border-color: #2563eb;
+        background: #f1f5f9;
+    }
+
+    .gender-group input[type="radio"] {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+    }
+
+    .matrix-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+    }
+
+    .matrix-table th {
+        background: #f1f5f9;
+        padding: 12px 6px;
+        text-align: center;
+        font-size: 0.75em;
+        font-weight: 600;
+        border: 1px solid #e5e7eb;
+        white-space: nowrap;
+        line-height: 1.3;
+    }
+
+    .matrix-table td {
+        padding: 15px 10px;
+        border: 1px solid #e5e7eb;
+        text-align: center;
+    }
+
+    .matrix-table td:first-child {
+        text-align: left;
+        font-weight: 500;
+        background: #fafafa;
+    }
+
+    .matrix-table input[type="radio"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+    }
+
+    .scenario-box {
+        background: #f1f5f9;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 20px 0;
+        border-left: 4px solid #2563eb;
+        line-height: 1.8;
+    }
+
+    .checkbox-confirm {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 15px;
+        background: #fef3c7;
+        border: 2px solid #fbbf24;
+        border-radius: 6px;
+        margin: 20px 0;
+    }
+
+    .checkbox-confirm input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+    }
+
+    .checkbox-confirm label {
+        cursor: pointer;
+        font-weight: 500;
+    }
+
+    .plan-choice {
+        display: flex;
+        gap: 20px;
+        margin: 20px 0;
+        justify-content: center;
+    }
+
+    .plan-option {
+        position: relative;
+        cursor: pointer;
+    }
+
+    .plan-option input[type="radio"] {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .plan-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 150px;
+        min-height: 60px;
+        padding: 15px 40px;
+        border: 3px solid #e5e7eb;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 1.2em;
+        transition: all 0.2s;
+        background: white;
+    }
+
+    .plan-option:hover .plan-content {
+        border-color: #2563eb;
+        background: #f1f5f9;
+    }
+
+    .plan-option input[type="radio"]:checked + .plan-content {
+        background: #dbeafe;
+        border-color: #2563eb;
+        color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .quiz-option {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        margin: 10px 0;
+        border: 2px solid #e5e7eb;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .quiz-option:hover {
+        border-color: #2563eb;
+        background: #f1f5f9;
+    }
+
+    .quiz-option input[type="radio"] {
+        margin-right: 10px;
+        width: 18px;
+        height: 18px;
+    }
+
+    .button-group {
+        display: flex;
+        gap: 10px;
+        margin-top: 30px;
+    }
+
+    .btn {
+        flex: 1;
+        padding: 15px 30px;
+        font-size: 1.1em;
+        font-weight: 600;
+        border-radius: 6px;
+        cursor: pointer;
+        border: none;
+        transition: all 0.2s;
+    }
+
+    .btn-next {
+        background: #2563eb;
+        color: white;
+    }
+
+    .btn-next:hover:not(:disabled) {
+        background: #1d4ed8;
+    }
+
+    .btn-prev {
+        background: #e5e7eb;
+        color: #64748b;
+    }
+
+    .btn-prev:hover {
+        background: #d1d5db;
+    }
+
+    .btn-submit {
+        background: #10b981;
+        color: white;
+    }
+
+    .btn-submit:hover:not(:disabled) {
+        background: #059669;
+    }
+
+    .btn:disabled {
+        background: #d1d5db;
+        color: #9ca3af;
+        cursor: not-allowed;
+    }
+
+    .completion {
+        display: none;
+        text-align: center;
+        padding: 40px;
+    }
+
+    .completion.show {
+        display: block;
+    }
+
+    .completion h2 {
+        color: #2563eb;
+        margin-bottom: 20px;
+    }
+
+    .footer-text {
+        text-align: center;
+        color: #64748b;
+        font-size: 0.9em;
+        margin-top: 30px;
+    }
+
+    .task-header {
+        margin-bottom: 20px;
+        text-align: left;
+    }
+
+    .task-title {
+        font-weight: bold;
+        font-size: 1.1em;
+        margin-bottom: 5px;
+    }
+
+    .task-desc {
+        color: #4b5563;
+        font-size: 0.95em;
+        line-height: 1.6;
+    }
+
+    hr {
+        border: 0;
+        border-top: 1px solid #e5e7eb;
+        margin: 25px 0;
+    }
+
+    .chat-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        margin: 20px 0;
+    }
+
+    .chat-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .chat-profile {
+        font-weight: bold;
+        color: #4b5563;
+        font-size: 0.95em;
+        margin-top: 10px;
+        white-space: nowrap;
+    }
+
+    .chat-bubble {
+        background-color: #deeaf7;
+        padding: 20px 25px;
+        border-radius: 20px;
+        border-top-left-radius: 2px;
+        line-height: 1.8;
+        color: #1f2937;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        max-width: 85%;
+        text-align: left;
+    }
+
+    @media (max-width: 768px) {
+        .container {
+            padding: 20px;
+        }
+        .matrix-table {
+            font-size: 0.9em;
+        }
+        .matrix-table th,
+        .matrix-table td {
+            padding: 8px 4px;
+        }
+        .plan-choice {
+            flex-direction: column;
+        }
+    }
+</style>
+
+</head>
+
+<body>
+
+    <!-- 로딩 스피너 -->
+    <div id="loading-screen" style="
+        position:fixed; inset:0; background:white;
+        display:flex; flex-direction:column;
+        align-items:center; justify-content:center; z-index:9999;">
+        <div style="width:40px;height:40px;border:4px solid #e5e7eb;
+            border-top-color:#2563eb;border-radius:50%;
+            animation:spin 0.8s linear infinite;"></div>
+        <p style="margin-top:16px;color:#64748b;font-size:0.95em;font-family:'Malgun Gothic','Noto Sans KR',sans-serif;">
+            설문을 불러오는 중입니다...
+        </p>
+    </div>
+
+    <div class="container" id="survey-container">
+
+        <div class="progress-text">
+            <span id="progress-text">1 / 19</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill" style="width: 9%"></div>
+        </div>
+
+        <form id="survey-form">
+
+            <!-- ========== PAGE 1: 연구 설명 및 동의 ========== -->
+            <div class="page active" data-page="1">
+                <div style="text-align: center; margin-bottom: 40px; padding-bottom: 20px; border-bottom: 2px solid #e5e7eb;">
+                    <h1 style="font-size: 1.8em; font-weight: 800; color: #1e293b; margin-bottom: 10px; word-break: keep-all;">
+                        마케팅 기획서 작성에서의<br>인간-AI 협업 경험에 대한 연구
+                    </h1>
+                </div>
+
+                <h2 style="font-size: 1.3em; font-weight: 700; margin-bottom: 20px; text-align: center;">연구 참여 설명문</h2>
+
+                <div class="consent-summary">
+                    <p>본 연구는 AI의 특성(자율성·투명성)이 사용자의 심리적 반응에 미치는 영향을 알아보는 학술 연구입니다. 참여 방법은 가상의 마케팅 기획 시나리오를 텍스트와 음성으로 읽고
+                        관련 설문에 응답하는 것으로, 소요 시간은 약 15분입니다. 수집되는 자료는 익명으로 처리되며 연구 목적 외에는 사용되지 않습니다.
+                        참여는 전적으로 자발적이며, 언제든 이유 없이 중단하실 수 있고 어떠한 불이익도 없습니다.<br>
+                        SONA를 통해 참여하시는 분께는 수업 내 가산 크레딧 1점이 제공되며, 참여 여부는 담당 교수에게 공개되지 않습니다.<br>
+                        아래 자세히 보기를 통해 전체 설명문을 확인하신 후 동의 여부를 결정해 주시기 바랍니다.</p>
+                </div>
+
+                <div class="detail-toggle" onclick="toggleDetail()">
+                    <input type="checkbox" id="detail-checkbox">
+                    <label for="detail-checkbox">자세히 보기</label>
+                </div>
+
+                <div class="consent-detail" id="consent-detail">
+                    <p>1) 연구배경과 목적<br>본 연구는 AI의 특성이 사용자의 심리적 반응에 어떤 영향을 미치는지 알아보고자 합니다.</p>
+                    <p>2) 연구대상<br>연구 대상자는 만 18세 이상 성인으로, 생성형 AI 도구를 사용한 경험이 있는 분을 대상으로 합니다.<br>
+                        총 300명을 모집할 예정입니다.<br>
+                        단, 다음에 해당하는 경우 참여가 제한됩니다:<br>
+                        - 한국어 독해에 어려움이 있는 분<br>
+                        - 생성형 AI 도구를 사용한 경험이 전혀 없는 분.</p>
+                    <p>3) 연구 참여 기간, 방법 및 절차<br>참여 시간: 약 15분<br>참여 방법: 온라인 설문<br>
+                        절차: 설명문 확인 → 연구 참가 동의 → 설문 참여 → 완료<br>
+                        참여자는 4개의 가상 시나리오 중 하나에 무작위로 배정됩니다. 제시되는 가상의 시나리오를 읽으며 그 상황에 있다고 상상하시고, 관련 질문에 답변해 주시면 됩니다.</p>
+                    <p>4) 연구대상자가 준수해야 할 사항<br>시나리오 내용을 꼼꼼히 읽고, 질문에 응답해시면 됩니다. 시나리오 이해를 확인하는 문항이 포함되어 있으므로, 내용을 충분히 읽어 주시기 바랍니다.</p>
+                    <p>5) 연구대상자에게 예상되는 위험과 이득<br>
+                        위험: 본 연구는 일상적인 설문 응답 수준으로 예상되는 위험이 낮은 연구입니다. 부정적인 상황이 제시될 수 있지만, 이는 가상의 상황이며 일상에서 경험할 수 있는 수준의
+                        가벼운 불편감에 해당됩니다. 불편감을 느끼실 경우 언제든 중단하실 수 있습니다.<br>
+                        이득: 연구 참여로 연구대상자에게 기대되는 직접적인 이득은 없습니다. 다만, AI 활용에 대해 생각해 볼 기회를 가질 수 있습니다. 본 연구 결과는 향후 AI 도구 설계와
+                        조직 내 AI 도입 정책에 활용될 수 있습니다.</p>
+                    <p>6) 대상자의 사생활과 개인정보 보호<br>
+                        본 연구는 개인을 식별할 수 있는 정보(이름, 이메일, 전화번호, IP 주소 등)를 수집하지 않습니다. 각 응답에는 시스템이 자동 생성한 무작위 ID만 부여되어 익명으로
+                        처리됩니다.<br>
+                        수집된 자료는 암호화된 연구용 컴퓨터에 보관되며, 연구책임자만 접근 가능합니다. 자료는 연구 종료 후 3년간 보관하며, 보관 기간 만료 후 영구 삭제합니다.</p>
+                    <p>7) 연구에 참여함으로써 연구대상자가 부담해야 할 예상 비용<br>참여에 따라 연구대상자가 부담해야 하는 비용은 없습니다.</p>
+                    <p>8) 연구대상자 보상 및 연구 참여에 따른 손실에 대한 보상<br>
+                        연구 참여에 따른 금전적 보상은 제공되지 않습니다. 다만 SONA 시스템을 통해 참여하시는 분께는 연구 참여 크레딧 1점이 부여됩니다. 해당 크레딧은 수업 내 다양한 점수
+                        취득 방법 중 하나이며, 연구 미참여로 인한 학업상 불이익은 발생하지 않습니다. 참여 여부는 담당교수에게 공개되지 않습니다. 설문을 중도 포기하셔도 불이익은 없으나 크레딧은
+                        설문 완료 시에만 제공됩니다.</p>
+                    <p>9) 연구 참여를 제한하는 경우<br>만 18세 미만이거나, 온라인 설문 참여가 어려운 경우 참여가 제한됩니다.</p>
+                    <p>10) 연구대상자의 안전보호대책<br>
+                        본 연구는 온라인 설문으로 진행되어 예상되는 신체적 위험은 없습니다. 참여 도중 불편감을 느끼실 경우, 언제든 설문을 중단하실 수 있으며, 연구담당자에게 문의하실 수
+                        있습니다. 본 연구와 관련하여 인과관계가 확인된 손상이 발생할 경우, 심리상담 서비스 연계 등 필요한 지원을 받으실 수 있으며, 이 과정에서 발생하는 비용은 연구책임자가
+                        부담합니다.</p>
+                    <p>11) 개인정보제공<br>본 연구에서 수집된 자료는 연구 목적으로만 사용되며 제 3자에게 제공되지 않습니다.</p>
+                    <p>12) 연구참여의 자발성과 동의의 철회<br>
+                        귀하는 설명문을 충분히 이해하고 자발적인 결정에 따라 연구에 참여하게 됩니다. 귀하가 이 연구에 참여하는데 동의하지 않더라도 아무런 불이익을 받지 않으며 참여해야 할 의무는
+                        없습니다. 또한 연구 참가에 동의한 후에라도 자유의사에 의하여 언제든지 이유를 제시하지 않고 동의를 취소할 수 있습니다. 연구 참가 도중 참여를 포기하시는 경우, 해당
+                        시점까지 수집된 자료는 모두 영구 삭제됩니다.</p>
+                    <p>13) 연구결과에 대한 열람<br>
+                        본 연구는 익명 자료로 수집되므로, 연구자, 의뢰자, 정부기관이 자료를 열람하더라도 응답자를 특정할 수 없습니다. 연구 결과 출판 시에도 집단 수준의 통계 결과만 보고되며,
+                        개별 응답자 정보는 포함되지 않습니다.</p>
+                    <p>14) 연구자의 연락처<br>
+                        본 연구에 대한 문의사항이 있으시면 연구책임자(051-510-2131, jslee100@pusan.ac.kr, 이재식 교수)와
+                        공동연구자(010-6638-9025, bae2714@pusan.ac.kr, 배건희)에게 연락주시길 바랍니다.</p>
+                    <p>15) 위원회의 연락처<br>
+                        본 연구는 부산대학교 생명윤리위원회가 승인하였으며 본 연구의 참가자(연구대상자)로서 귀하의 권리에 대해 질문이 있으시면 부산대학교 생명윤리위원회
+                        행정간사(051-510-3677, irb@pusan.ac.kr)에게 문의하실 수 있습니다.</p>
+                </div>
+
+                <div style="margin-top: 40px; padding-top: 30px; border-top: 2px solid #e5e7eb;">
+                    <h2 style="font-size: 1.3em; font-weight: 700; margin-bottom: 20px; text-align: center;">연구 참여 동의서</h2>
+
+                    <div style="background: #f9fafb; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                        <p>1. 본인은 본 연구의 설명문을 읽었으며 연구 내용에 대해 충분히 이해하였습니다.<br>
+                            2. 본인은 이 연구에 참여함으로써 발생하는 위험과 이득에 관하여 충분히 알고 있습니다.<br>
+                            3. 본인은 이 연구에 참여하는 것에 대하여 자발적으로 동의합니다.<br>
+                            4. 본인은 이 연구에서 얻어진 나에 대한 정보를 현행 법률과 부산대학교 생명윤리위원회가 허용하는 범위 내에서 연구자가 수집하고 처리하는데 동의합니다.<br>
+                            5. 본인은 언제라도 이 연구의 참여를 철회할 수 있고 이러한 결정이 나에게 어떠한 해도 되지 않을 것이라는 것을 압니다.</p>
+                    </div>
+
+                    <div class="question">
+                        <div class="question-text" style="text-align: center; font-size: 1.1em;">
+                            연구에 참여하는 것에 동의하십니까? <span class="required">*</span>
+                        </div>
+                        <div class="radio-horizontal">
+                            <label>
+                                <input type="radio" name="consent" value="예" required>
+                                <span>예</span>
+                            </label>
+                            <label>
+                                <input type="radio" name="consent" value="아니오">
+                                <span>아니오</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer-text">부산대학교 생명윤리위원회</div>
+
+                <div class="button-group">
+                    <button type="button" class="btn btn-next" onclick="nextPage()">다음</button>
+                </div>
+            </div>
+
+            <!-- ========== PAGE 2: 인구통계학적 정보 ========== -->
+            <div class="page" data-page="2">
+                <div class="question">
+                    <div class="question-text">SONA 아이디 (6자리 숫자, 선택사항)</div>
+                    <input type="text" name="sona_id" placeholder="000000" maxlength="6" pattern="[0-9]{6}">
+                </div>
+
+                <div class="question">
+                    <div class="question-text">성별 <span class="required">*</span></div>
+                    <div class="gender-group">
+                        <label>
+                            <input type="radio" name="gender" value="여성" required>
+                            <span>여성</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="gender" value="남성">
+                            <span>남성</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <div class="question-text">연령 (만) <span class="required">*</span></div>
+                    <input type="number" name="age" min="18" max="100" required>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" class="btn btn-prev" onclick="prevPage()">이전</button>
+                    <button type="button" class="btn btn-next" onclick="nextPage()">다음</button>
+                </div>
+            </div>
+
+            <!-- ========== PAGE 3: AI 사용 경험 ========== -->
+            <div class="page" data-page="3">
+                <div class="section-title">평소 본인의 생성형 AI 활용 습관에 대해 응답해 주시기 바랍니다.</div>
+                <table class="matrix-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 50%;">문항</th>
+                            <th>1<br><small>전혀<br>그렇지<br>않다</small></th>
+                            <th>2<br><small>그렇지<br>않다</small></th>
+                            <th>3<br><small>약간<br>그렇지<br>않다</small></th>
+                            <th>4<br><small>보통이다</small></th>
+                            <th>5<br><small>약간<br>그렇다</small></th>
+                            <th>6<br><small>그렇다</small></th>
+                            <th>7<br><small>매우<br>그렇다</small></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>나는 내가 해야 할 주요한 일들을 처리할 때<br> 대부분 생성형 AI를 사용한다.</td>
+                            <td><input type="radio" name="ai_exp_1" value="1" required></td>
+                            <td><input type="radio" name="ai_exp_1" value="2"></td>
+                            <td><input type="radio" name="ai_exp_1" value="3"></td>
+                            <td><input type="radio" name="ai_exp_1" value="4"></td>
+                            <td><input type="radio" name="ai_exp_1" value="5"></td>
+                            <td><input type="radio" name="ai_exp_1" value="6"></td>
+                            <td><input type="radio" name="ai_exp_1" value="7"></td>
+                        </tr>
+                        <tr>
+                            <td>나는 무언가 작업을 할 때 대부분의 시간을<br>생성형 AI와 보낸다.</td>
+                            <td><input type="radio" name="ai_exp_2" value="1" required></td>
+                            <td><input type="radio" name="ai_exp_2" value="2"></td>
+                            <td><input type="radio" name="ai_exp_2" value="3"></td>
+                            <td><input type="radio" name="ai_exp_2" value="4"></td>
+                            <td><input type="radio" name="ai_exp_2" value="5"></td>
+                            <td><input type="radio" name="ai_exp_2" value="6"></td>
+                            <td><input type="radio" name="ai_exp_2" value="7"></td>
+                        </tr>
+                        <tr>
+                            <td>나는 중요한 판단이나 결정이 필요할 때 생성형 AI를 활용한다.</td>
+                            <td><input type="radio" name="ai_exp_3" value="1" required></td>
+                            <td><input type="radio" name="ai_exp_3" value="2"></td>
+                            <td><input type="radio" name="ai_exp_3" value="3"></td>
+                            <td><input type="radio" name="ai_exp_3" value="4"></td>
+                            <td><input type="radio" name="ai_exp_3" value="5"></td>
+                            <td><input type="radio" name="ai_exp_3" value="6"></td>
+                            <td><input type="radio" name="ai_exp_3" value="7"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="button-group">
+                    <button type="button" class="btn btn-prev" onclick="prevPage()">이전</button>
+                    <button type="button" class="btn btn-next" onclick="nextPage()">다음</button>
+                </div>
+            </div>
+
+            <!-- ========== PAGE 4: 자기효능감 ========== -->
+            <div class="page" data-page="4">
+                <div class="section-title">각 문항을 읽고 해당하는 번호에 표시해 주십시오.</div>
+                <table class="matrix-table">
+                    <thead>
+                        <tr>
+                            <th style="width:70%">문항</th>
+                            <th>1<br><small>전혀<br>아니다</small></th>
+                            <th>2<br><small>거의<br>아니다</small></th>
+                            <th>3<br><small>대체로<br>그렇다</small></th>
+                            <th>4<br><small>매우<br>그렇다</small></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>다른 사람이 내 의견에 반대해도 나는 끝까지 내 뜻대로 한다.</td>
+                            <td><input type="radio" name="gse_1" value="1" required></td>
+                            <td><input type="radio" name="gse_1" value="2"></td>
+                            <td><input type="radio" name="gse_1" value="3"></td>
+                            <td><input type="radio" name="gse_1" value="4"></td>
+                        </tr>
+                        <tr>
+                            <td>어려운 일도 내가 노력하면 해결할 수 있다.</td>
+                            <td><input type="radio" name="gse_2" value="1" required></td>
+                            <td><input type="radio" name="gse_2" value="2"></td>
+                            <td><input type="radio" name="gse_2" value="3"></td>
+                            <td><input type="radio" name="gse_2" value="4"></td>
+                        </tr>
+                        <tr>
+                            <td>나는 마음먹은 일을 해 내는데 어려움이 없다고 생각한다.</td>
+                            <td><input type="radio" name="gse_3" value="1" required></td>
+                            <td><input type="radio" name="gse_3" value="2"></td>
+                            <td><input type="radio" name="gse_3" value="3"></td>
+                            <td><input type="radio" name="gse_3" value="4"></td>
+                        </tr>
+                        <tr>
+                            <td>생각지도 않은 일이 있어도 나는 적당한 태도를 취할 수 있다.</td>
+                            <td><input type="radio" name="gse_4" value="1" required></td>
+                            <td><input type="radio" name="gse_4" value="2"></td>
+                            <td><input type="radio" name="gse_4" value="3"></td>
+                            <td><input type="radio" name="gse_4" value="4"></td>
+                        </tr>
+                        <tr>
+                            <td>뜻밖의 결과를 접해도 나는 잘 대처해 나갈 수 있다고 믿는다.</td>
+                            <td><input type="radio" name="gse_5" value="1" required></td>
+                            <td><input type="radio" name="gse_5" value="2"></td>
+                            <td><input type="radio" name="gse_5" value="3"></td>
+                            <td><input type="radio" name="gse_5" value="4"></td>
+                        </tr>
+                        <tr>
+                            <td>언제나 나의 능력을 믿기 때문에 어려운 상황에도 당황하지 않을 수 있다.</td>
+                            <td><input type="radio" name="gse_6" value="1" required></td>
+                            <td><input type="radio" name="gse_6" value="2"></td>
+                            <td><input type="radio" name="gse_6" value="3"></td>
+                            <td><input type="radio" name="gse_6" value="4"></td>
+                        </tr>
+                        <tr>
+                            <td>언제 어떤 일이 일어나더라도 나는 올바른 판단을 내릴 수 있다.</td>
+                            <td><input type="radio" name="gse_7" value="1" required></td>
+                            <td><input type="radio" name="gse_7" value="2"></td>
+                            <td><input type="radio" name="gse_7" value="3"></td>
+                            <td><input type="radio" name="gse_7" value="4"></td>
+                        </tr>
+                        <tr>
+                            <td>어떠한 문제에 부딪혀도 나는 해결 방법을 찾아낸다.</td>
+                            <td><input type="radio" name="gse_8" value="1" required></td>
+                            <td><input type="radio" name="gse_8" value="2"></td>
+                            <td><input type="radio" name="gse_8" value="3"></td>
+                            <td><input type="radio" name="gse_8" value="4"></td>
+                        </tr>
+                        <tr>
+                            <td>새로운 문제에 부딪혀도 나는 잘 처리해 나갈 수 있다.</td>
+                            <td><input type="radio" name="gse_9" value="1" required></td>
+                            <td><input type="radio" name="gse_9" value="2"></td>
+                            <td><input type="radio" name="gse_9" value="3"></td>
+                            <td><input type="radio" name="gse_9" value="4"></td>
+                        </tr>
+                        <tr>
+                            <td>어떤 문제에 처해도 나는 여러가지 해결방법을 가지고 있다.</td>
+                            <td><input type="radio" name="gse_10" value="1" required></td>
+                            <td><input type="radio" name="gse_10" value="2"></td>
+                            <td><input type="radio" name="gse_10" value="3"></td>
+                            <td><input type="radio" name="gse_10" value="4"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="button-group">
+                    <button type="button" class="btn btn-prev" onclick="prevPage()">이전</button>
+                    <button type="button" class="btn btn-next" onclick="nextPage()">다음</button>
+                </div>
+            </div>
+
+            <!-- ========== PAGE 5: 시나리오 음성 안내 ========== -->
+            <div class="page" data-page="5">
+                <div class="scenario-box">
+                    <p style="font-weight: 600; margin-bottom: 15px;">🔊 시나리오 음성 안내</p>
+                    <p>지금부터 제시되는 시나리오는 텍스트와 함께 음성으로도 제공됩니다.<br>
+                        원활한 참여를 위해 이어폰 또는 스피커를 미리 연결해 주시기 바랍니다.<br>
+                        준비가 되셨으면 다음 버튼을 눌러 시작해 주세요.</p>
+                </div>
+                <div class="button-group">
+                    <button type="button" class="btn btn-prev" onclick="prevPage()">이전</button>
+                    <button type="button" class="btn btn-next" onclick="nextPage()">다음</button>
+                </div>
+            </div>
+
+            <!-- ========== PAGE 6: 설문 안내 ========== -->
+            <div class="page" data-page="6">
+                <div id="audio-bar-6" style="width:100%;margin-bottom:12px;"></div>
+                <div class="scenario-box">
+                    <p>지금부터 업무 상황 시나리오를 읽게 됩니다.<br>
+                        실제로 그 상황에 있다고 생각하며 충분히 몰입해서 읽어 주시기 바랍니다.<br>
+                        시나리오를 읽은 후 내용과 관련된 질문에 응답하게 됩니다.<br>
+                        질문 중 일부는 시나리오 내용을 확인하는 문항으로, 정확하게 응답하지 않으면 이후 진행이 제한될 수 있으니 내용을 꼼꼼히 읽어 주시기 바랍니다.</p>
+                </div>
+                <div class="button-group">
+                    <button type="button" class="btn btn-prev" onclick="prevPage()">이전</button>
+                    <button type="button" class="btn btn-next" onclick="nextPage()">다음</button>
+                </div>
+            </div>
+
+            <!-- ========== PAGE 7: 공통 배경 시나리오 ========== -->
+            <div class="page" data-page="7">
+                <div id="audio-bar-7" style="width:100%;margin-bottom:12px;"></div>
+                <div class="scenario-box">
+                    <p>당신은 식품 회사 마케팅 팀에서 인턴으로 일하고 있습니다.<br>
+                        당신은 회사에서 최근 출시한 비타민 음료 '비타 부스트'의 온라인 캠페인을 담당하게 되었습니다.
+                        4주간 SNS 캠페인을 기획해야 하며, 게시물 평균 조회수 1만 회 이상을 달성하는 것이 목표입니다.</p>
+                    <p>당신은 이 캠페인의 기획서를 직접 작성해야 합니다.
+                        기획서 작성 과정에서 회사가 도입한 업무용 AI 도구를 활용하게 되었습니다.
+                        당신은 캠페인의 목표와 기본 정보를 AI에 입력했고, 이제 AI와 함께 구체적인 기획안을 만들어가는 단계에 들어갔습니다.</p>
+                    <p>이제 당신은 AI와 함께 세 가지 작업을 수행할 것입니다:<br>
+                        ① 주요 대상 설정 → ② 게시물 컨셉 결정 → ③ 홍보 매체 결정</p>
+                    <p>각 작업에서 AI가 어떻게 작동하는지 주의 깊게 읽어 주십시오.</p>
+                </div>
+                <div class="button-group">
+                    <button type="button" class="btn btn-prev" onclick="prevPage()">이전</button>
+                    <button type="button" class="btn btn-next" onclick="nextPage()">다음</button>
+                </div>
+            </div>
+
+            <!-- ==================== 조건 1: 고자율고투명 ==================== -->
+            <div class="page condition-page" data-page="7a" data-condition="1">
+                <div id="audio-bar-7a" style="width:100%;margin-bottom:12px;"></div>
+                <div class="task-header">
+                    <div class="task-desc">AI는 온라인 캠페인 기획의 각 단계에서 방향을 스스로 결정하고 그 결과를 제시합니다.<br>
+                        AI는 각 결정에 대해 어떤 데이터를 분석했는지, 왜 그러한 방향을 선택했는지 구체적인 근거를 함께 제공합니다.</div>
+                </div>
+                <hr>
+                <div class="task-title">[작업 1: 주요 대상 설정]</div>
+                <div class="task-desc">AI가 도출한 캠페인의 주요 대상은 다음과 같습니다.<br>
+                    내용을 꼼꼼히 읽어주세요. 이어지는 확인 문제에서 오답이 발생하면 이전 단계로 되돌아갑니다.</div>
+                <hr>
+                <div class="chat-container">
+                    <div class="chat-row">
+                        <div class="chat-profile">AI</div>
+                        <div class="chat-bubble">
+                            <p>최근 6개월간 국내 비타민·건강음료 관련 SNS 게시물 반응 데이터를 분석한 결과, 20대 후반~30대 초반 직장인 여성층에서 '피로 회복'과 '간편 섭취'
+                                키워드에 대한 관심도가 다른 연령대 대비 2.3배 높게 나타났습니다.<br>
+                                이를 바탕으로 이번 캠페인의 주요 대상을 '20대 후반~30대 초반 직장인 여성'으로 설정합니다.</p>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="task-desc">AI의 결과를 확인한 후, 하단의 체크박스를 클릭하고 다음 단계를 진행해 주십시오.</div>
+                <div class="checkbox-confirm">
+                    <input type="checkbox" id="confirm_7a" onchange="checkConfirm('7a')">
+                    <label for="confirm_7a">AI 제안 결과를 확인했습니다.</label>
+                </div>
+                <div class="button-group">
+                    <button type="button" class="btn btn-prev" onclick="prevPage()">이전</button>
+                    <button type="button" class="btn btn-next" id="next_7a" onclick="nextPage()" disabled>다음</button>
+                </div>
+            </div>
+
+            <div class="page condition-page" data-page="8a" data-condition="1">
+                <div class="section-title">확인 문항</div>
+                <div class="question">
+                    <div class="question-text">AI가 캠페인의 주요 대상을 설정한 근거로 제시한 것은 무엇이었나요? <span class="required">*</span></div>
+                    <label class="quiz-option"><input type="radio" name="quiz_8a" value="1" required><span>주요 대상의 매체별 체류 시간과 광고 클릭률 데이터</span></label>
+                    <label class="quiz-option"><input type="radio" name="quiz_8a" value="2"><span>비타민·건강음료 관련 SNS 게시물 반응 데이터 분석 결과</span></label>
+                    <label class="quiz-option"><input type="radio" name="quiz_8a" value="3"><span>주요 대상의 콘텐츠 유형별 저장 및 공유율 비교 데이터</span></label>
+                    <label class="quiz-option"><input type="radio" name="quiz_8a" value="4"><span>비타 부스트의 기존 구매자 연령대별 구매 이력 데이터</span></label>
+                </div>
+                <div class="button-group">
+                    <button type="button" class="btn btn-prev" onclick="prevPage()">이전</button>
+                    <button type="button" class="btn btn-next" onclick="checkQuiz('8a', '2')">다음</button>
+                </div>
+            </div>
+
+            <div class="page condition-page" data-page="9a" data-condition="1">
+                <div id="audio-bar-9a" style="width:100%;margin-bottom:12px;"></div>
+                <div class="task-title">[작업 2: 게시물 컨셉 결정]</div>
+                <div class="task-desc">AI가 도출한 캠페인 컨셉은 다음과 같습니다.</div>
+                <hr>
+                <div class="chat-container">
+                    <div class="chat-row">
+                        <div class="chat-profile">AI</div>
+                        <div class="chat-bubble">
+                            <p>주요 대상의 SNS 이용 패턴을 분석한 결과, 점심시간(12~13시)과 퇴근 후(19~21시)에 릴스·숏폼 콘텐츠 소비가 집중됩니다. 더불어 이 시간대에 '일상
+                                공감형' 콘텐츠 저장 및 공유율이 '정보 전달형'보다 41% 높게 나타났습니다.<br>
+                                이를 바탕으로 이번 캠페인의 게시물 컨셉을 '가볍고 유머러스한 일상 공감형'으로 설정합니다.</p>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="checkbox-confirm">
+                    <input type="checkbox" id="confirm_9a" onchange="checkConfirm('9a')">
+                    <label for="confirm_9a">AI 제안 결과를 확인했습니다.</label>
+                </div>
+                <div class="button-group">
+                    <button type="button" class="btn btn-prev" onclick="prevPage()">이전</button>
+                    <button type="button" class="btn btn-next" id="next_9a" onclick="nextPage()" disabled>다음</button>
+                </div>
+            </div>
+
+            <div class="page condition-page" data-page="10a" data-condition="1">
+                <div id="audio-bar-10a" style="width:100%;margin-bottom:12px;"></div>
+                <div class="task-header">
+                    <div class="task-title">[작업 3: 홍보 매체 결정]</div>
+                    <div class="task-desc">AI가 도출한 홍보 매체는 다음과 같습니다.</div>
+                </div>
+                <hr>
+                <div class="chat-container">
+                    <div class="chat-row">
+                        <div class="chat-profile">AI</div>
+                        <div class="chat-bubble">
+                            <p>주요 대상의 매체별 이용 시간과 광고 데이터를 분석한 결과, 인스타그램 릴스의 20~30대의 실제 구매로 연결된 비율이 타 매체 대비 1.8배 높게
+                                나타났습니다. 틱톡의 경우 조회수는 높으나 실제 구매로 이어지는 비중이 낮습니다.<br>
+                                이를 바탕으로 이번 캠페인의 홍보 매체를 인스타그램 릴스로 설정합니다.</p>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="checkbox-confirm">
+                    <input type="checkbox" id="confirm_10a" onchange="checkConfirm('10a')">
+                    <label for="confirm_10a">AI 제안 결과를 확인했습니다.</label>
+                </div>
+                <div class="button-group">
+                    <button type="button" class="btn btn-prev" onclick="prevPage()">이전</button>
+                    <button type="button" class="btn btn-next" id="next_10a" onclick="nextPage()" disabled>다음</button>
+                </div>
+            </div>
+
+            <!-- ==================== 조건 2: 고자율저투명 ==================== -->
+            <div class="page condition-page" data-page="7b" data-condition="2">
+                <div id="audio-bar-7b" style="width:100%;margin-bottom:12px;"></div>
+                <div class="task-header">
+                    <div class="task-desc">AI는 온라인 캠페인 기획의 각 단계에서 방향을 스스로 결정하고 그 결과를 제시합니다.<br>
+                        AI는 각 결정에 대해 별도의 설명이나 근거는 제공하지 않으며, 결정된 결과만 전달합니다.</div>
+                </div>
+                <hr>
+                <div class="task-title">[작업 1: 주요 대상 설정]</div>
+                <div class="task-desc">AI가 도출한 캠페인의 주요 대상은 다음과 같습니다.<br>
+                    내용을 꼼꼼히 읽어주세요. 이어지는 확인 문제에서 오답이 발생하면 이전 단계로 되돌아갑니다.</div>
+                <hr>
+                <div class="chat-container">
+                    <div class="chat-row">
+                        <div class="chat-profile">AI</div>
+                        <div class="chat-bubble">
+                            <p>이번 캠페인의 주요 대상을 '20대 후반~30대 초반 직장인 여성'으로 설정합니다.</p>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="task-desc">AI의 결과를 확인한 후, 하단의 체크박스를 클릭하고 다음 단계를 진행해 주십시오.</div>
+                <div class="checkbox-confirm">
+                    <input type="checkbox" id="confirm_7b" onchange="checkConfirm('7b')">
+                    <label for="confirm_7b">AI 제안 결과를 확인했습니다.</label>
+                </div>
+                <div class="button-group">
+                    <button type="button" class="btn btn-prev" onclick="prevPage()">이전</button>
+                    <button type="button" class="btn btn-next" id="next_7b" onclick="nextPage()" disabled>다음</button>
+                </div>
+            </div>
+
+            <div class="page condition-page" data-page="8b" data-condition="2">
+                <div class="section-title">확인 문항</div>
+                <div class="question">
+                    <div class="question-text">AI가 설정한 캠페인의 주요 대상은 무엇이었나요? <span class="required">*</span></div>
+                    <label class="quiz-option"><input type="radio" name="quiz_8b" value="1" required><span>10~20대 건강 관심 학생</span></label>
+                    <label class="quiz-option"><input type="radio" name="quiz_8b" value="2"><span>20대 후반~30대 초반 직장인 여성</span></label>
+                    <label class="quiz-option"><input type="radio" name="quiz_8b" value="3"><span>30~40대 건강 관리 직장인 남녀</span></label>
+                    <label class="quiz-option"><input type="radio" name="quiz_8b" value="4"><span>20~30대 운동 관심 남성</span></label>
+                </div>
+                <div class="button-group">
+                    <button type="button" class="btn btn-prev" onclick="prevPage()">이전</button>
+                    <button type="button" class="btn btn-next" onclick="checkQuiz('8b', '2')">다음</button>
+                </div>
+            </div>
+
+            <div class="page condition-page" data-page="9b" data-condition="2">
+                <div id="audio-bar-9b" style="width:100%;margin-bottom:12px;"></div>
+                <div class="task-header">
+                    <div class="task-title">[작업 2: 게시물 컨셉 결정]</div>
+                    <div class="task-desc">AI가 도출한 캠페인 컨셉은 다음과 같습니다.</div>
+                </div>
+                <hr>
+                <div class="chat-container">
+                    <div class="chat-row">
+                        <div class="chat-profile">AI</div>
+                        <div class="chat-bubble">
+                            <p>이번 캠페인의 게시물 컨셉을 '가볍고 유머러스한 일상 공감형'으로 설정합니다.</p>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="checkbox-confirm">
+                    <input type="checkbox" id="confirm_9b" onchange="checkConfirm('9b')">
+                    <label for="confirm_9b">AI 제안 결과를 확인했습니다.</label>
+                </div>
+                <div class="button-group">
+                    <button type="button" class="btn btn-prev" onclick="prevPage()">이전</button>
+                    <button type="button" class="btn btn-next" id="next_9b" onclick="nextPage()" disabled>다음</button>
+                </div>
+            </div>
+
+            <div class="page condition-page" data-page="10b" data-condition="2">
+                <div id="audio-bar-10b" style="width:100%;margin-bottom:12px;"></div>
+                <div class="task-header">
+                    <div class="task-title">[작업 3: 홍보 매체 결정]</div>
+                    <div class="task-desc">AI가 도출한 홍보 매체는 다음과 같습니다.</div>
+                </div>
+                <hr>
+                <div class="chat-container">
+                    <div class="chat-row">
+                        <div class="chat-profile">AI</div>
+                        <div class="chat-bubble">
+                            <p>이번 캠페인의 홍보 매체를 인스타그램 릴스로 설정합니다.</p>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="checkbox-confirm">
+                    <input type="checkbox" id="confirm_10b" onchange="checkConfirm('10b')">
+                    <label for="confirm_10b">AI 제안 결과를 확인했습니다.</label>
+                </div>
+                <div class="button-group">
+                    <button type="button" class="btn btn-prev" onclick="prevPage()">이전</button>
+                    <button type="button" class="btn btn-next" id="next_10b" onclick="nextPage()" disabled>다음</button>
+                </div>
+            </div>
+
+            <!-- ==================== 조건 3: 저자율고투명 ==================== -->
+            <div class="page condition-page" data-page="7c" data-condition="3">
+                <div id="audio-bar-7c" style="width:100%;margin-bottom:12px;"></div>
+                <div class="task-header">
+                    <div class="task-title">[업무용 AI 도구 안내]</div>
+                    <div class="task-desc">AI는 각 단계에서 두 가지 선택지를 제안하고, 당신이 하나를 선택하여 기획 방향을 결정합니다.<br>
+                        AI는 각 결정에 대해 어떤 데이터를 분석했는지, 왜 그러한 방향을 선택했는지 구체적인 근거를 함께 제공합니다.</div>
+                </div>
+                <hr>
+                <div class="task-title">[작업 1: 주요 대상 설정]</div>
+                <div class="task-desc">AI가 제안한 주요 대상 후보는 다음과 같습니다.<br>
+                    내용을 꼼꼼히 읽어주세요. 이어지는 확인 문제에서 오답이 발생하면 이전 단계로 되돌아갑니다.</div>
+                <hr>
+                <div class="chat-container">
+                    <div class="chat-row">
+                        <div class="chat-profile">AI</div>
+                        <div class="chat-bubble">
+                            <p>최근 6개월간 국내 비타민·건강음료 관련 SNS 게시물 반응 데이터를 분석한 결과, 20대 후반~30대 초반 직장인 여성층에서 '피로 회복'과 '간편 섭취'
+                                키워드에 대한 관심도가 다른 연령대 대비 2.3배 높게 나타났습니다.<br>
+                                이를 바탕으로 이번 캠페인의 주요 대상으로 두 가지 제안드립니다.<br>
+                                A안: '20대 후반~30대 초반 직장인 여성', 관심도가 가장 높은 층에 집중<br>
+                                B안: '건강에 관심있는 20~30대', 범위를 넓혀 인지도 확장</p>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="task-desc">AI의 추천을 확인한 후, 두 가지 대안 중 하나를 선택하고 다음 단계를 진행해 주십시오.</div>
+                <div class="question">
+                    <div class="question-text">주요 대상 설정 <span class="required">*</span></div>
+                    <div class="plan-choice">
+                        <label class="plan-option">
+                            <input type="radio" name="plan_7c" value="A안" required>
+                            <div class="plan-content">A안</div>
+                        </label>
+                        <label class="plan-option">
+                            <input type="radio" name="plan_7c" value="B안">
+                            <div class="plan-content">B안</div>
+                        </label>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button type="button" class="btn btn-prev" onclick="prevPage()">이전</button>
+                    <button type="button" class="btn btn-next" onclick="nextPage()">다음</button>
+                </div>
+            </div>
+
+            <div class="page condition-page" data-page="8c" data-condition="3">
+                <div class="section-title">확인 문항</div>
+                <div class="question">
+                    <div class="question-text">AI가 캠페인의 주요 대상을 설정한 근거로 제시한 것은 무엇이었나요? <span class="required">*</span></div>
+                    <label class="quiz-option"><input type="radio" name="quiz_8c" value="1" required><span>주요 대상의 플랫폼별 체류 시간과 광고 클릭률 데이터</span></label>
+                    <label class="quiz-option"><input type="radio" name="quiz_8c" value="2"><span>비타민·건강음료 관련 SNS 게시물 반응 데이터 분석 결과</span></label>
+                    <label class="quiz-option"><input type="radio" name="quiz_8c" value="3"><span>주요 대상의 콘텐츠 유형별 저장 및 공유율 비교 데이터</span></label>
+                    <label class="quiz-option"><input type="radio" name="quiz_8c" value="4"><span>비타 부스트의 기존 구매자 연령대별 구매 이력 데이터</span></label>
+                </div>
+                <div class="button-group">
+                    <button type="button" class="btn btn-prev" onclick="prevPage()">이전</button>
+                    <button type="button" class="btn btn-next" onclick="checkQuiz('8c', '2')">다음</button>
+                </div>
+            </div>
+
+            <div class="page condition-page" data-page="9c" data-condition="3">
+                <div id="audio-bar-9c" style="width:100%;margin-bottom:12px;"></div>
+                <div class="task-header">
+                    <div class="task-title">[작업 2: 게시물 컨셉 결정]</div>
+                    <div class="task-desc">AI가 제안한 컨셉 후보는 다음과 같습니다.</div>
+                </div>
+                <hr>
+                <div class="chat-container">
+                    <div class="chat-row">
+                        <div class="chat-profile">AI</div>
+                        <div class="chat-bubble">
+                            <p>주요 대상의 SNS 이용 패턴을 분석한 결과, 점심시간(12~13시)과 퇴근 후(19~21시)에 릴스·숏폼 콘텐츠 소비가 집중됩니다. 더불어 '일상 공감형'
+                                게시물은 '정보 전달형'보다 저장 및 공유율이 41% 높게 나타났습니다. 반면, '정보 전달형' 게시물은 제품을 신뢰하고 제품을 기억하는 비율이 타 게시물
+                                대비 2배 더 높게 나타났습니다.<br>
+                                이를 바탕으로 이번 캠페인의 게시물 컨셉을 두 가지 제안드립니다.<br>
+                                A안: '가볍고 유머러스한 일상 공감형', 공유와 확산에 유리<br>
+                                B안: '비타민 효능 중심 정보 전달형', 신뢰를 주고 제품의 기능 강조</p>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="question">
+                    <div class="question-text">컨셉 결정 <span class="required">*</span></div>
+                    <div class="plan-choice">
+                        <label class="plan-option">
+                            <input type="radio" name="plan_9c" value="A안" required>
+                            <div class="plan-content">A안</div>
+                        </label>
+                        <label class="plan-option">
+                            <input type="radio" name="plan_9c" value="B안">
+                            <div class="plan-content">B안</div>
+                        </label>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button type="button" class="btn btn-prev" onclick="prevPage()">이전</button>
+                    <button type="button" class="btn btn-next" onclick="nextPage()">다음</button>
+                </div>
+            </div>
+
+            <div class="page condition-page" data-page="10c" data-condition="3">
+                <div id="audio-bar-10c" style="width:100%;margin-bottom:12px;"></div>
+                <div class="task-header">
+                    <div class="task-title">[작업 3: 홍보 매체 결정]</div>
+                    <div class="task-desc">AI가 제안한 홍보 매체 후보는 다음과 같습니다.</div>
+                </div>
+                <hr>
+                <div class="chat-container">
+                    <div class="chat-row">
+                        <div class="chat-profile">AI</div>
+                        <div class="chat-bubble">
+                            <p>주요 대상의 매체별 이용 패턴을 분석한 결과, 인스타그램 릴스는 구매로 이어지는 비율이 다른 채널보다 1.8배 높았습니다. 반면, 틱톡은 영상이 퍼지는 속도가
+                                다른 채널보다 2.2배 더 빠른 것으로 나타났습니다.<br>
+                                이를 바탕으로 이번 캠페인의 홍보 매체를 두 가지 제안드립니다.<br>
+                                A안: '인스타그램 릴스', 한 매체에 집중하고 실제 구매를 높이는 방향<br>
+                                B안: '틱톡과 인스타그램', 두 매체를 함께 사용해 많은 사람에게 영상 노출</p>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="question">
+                    <div class="question-text">홍보 매체 결정 <span class="required">*</span></div>
+                    <div class="plan-choice">
+                        <label class="plan-option">
+                            <input type="radio" name="plan_10c" value="A안" required>
+                            <div class="plan-content">A안</div>
+                        </label>
+                        <label class="plan-option">
+                            <input type="radio" name="plan_10c" value="B안">
+                            <div class="plan-content">B안</div>
+                        </label>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button type="button" class="btn btn-prev" onclick="prevPage()">이전</button>
+                    <button type="button" class="btn btn-next" onclick="nextPage()">다음</button>
+                </div>
+            </div>
+
+            <!-- ==================== 조건 4: 저자율저투명 ==================== -->
+            <div class="page condition-page" data-page="7d" data-condition="4">
+                <div id="audio-bar-7d" style="width:100%;margin-bottom:12px;"></div>
+                <div class="task-header">
+                    <div class="task-title">[업무용 AI 도구 안내]</div>
+                    <div class="task-desc">AI는 각 단계에서 두 가지 선택지를 제안하고, 당신이 하나를 선택하여 기획 방향을 결정합니다.<br>
+                        AI는 각 결정에 대해 별도의 설명이나 근거는 제공하지 않으며, 결정된 결과만 전달합니다.</div>
+                </div>
+                <hr>
+                <div class="task-title">[작업 1: 주요 대상 설정]</div>
+                <div class="task-desc">AI가 제안한 주요 대상 후보는 다음과 같습니다.<br>
+                    내용을 꼼꼼히 읽어주세요. 이어지는 확인 문제에서 오답이 발생하면 이전 단계로 되돌아갑니다.</div>
+                <hr>
+                <div class="chat-container">
+                    <div class="chat-row">
+                        <div class="chat-profile">AI</div>
+                        <div class="chat-bubble">
+                            <p>이번 캠페인의 주요 대상으로 두 가지 제안드립니다.<br>
+                                A안: '20대 후반~30대 초반 직장인 여성'<br>
+                                B안: '건강에 관심있는 20~30대'</p>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="task-desc">AI의 추천을 확인한 후, 두 가지 대안 중 하나를 선택하고 다음 단계를 진행해 주십시오.</div>
+                <div class="question">
+                    <div class="question-text">대상 결정 <span class="required">*</span></div>
+                    <div class="plan-choice">
+                        <label class="plan-option">
+                            <input type="radio" name="plan_7d" value="A안" required>
+                            <div class="plan-content">A안</div>
+                        </label>
+                        <label class="plan-option">
+                            <input type="radio" name="plan_7d" value="B안">
+                            <div class="plan-content">B안</div>
+                        </label>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button type="button" class="btn btn-prev" onclick="prevPage()">이전</button>
+                    <button type="button" class="btn btn-next" onclick="nextPage()">다음</button>
+                </div>
+            </div>
+
+            <div class="page condition-page" data-page="8d" data-condition="4">
+                <div class="section-title">확인 문항</div>
+                <div class="question">
+                    <div class="question-text">AI가 추천한 캠페인의 주요 대상은 무엇이었나요? <span class="required">*</span></div>
+                    <label class="quiz-option"><input type="radio" name="quiz_8d" value="1" required><span>10~20대 건강 관심 학생</span></label>
+                    <label class="quiz-option"><input type="radio" name="quiz_8d" value="2"><span>20대 후반~30대 초반 직장인 여성</span></label>
+                    <label class="quiz-option"><input type="radio" name="quiz_8d" value="3"><span>30~40대 건강 관리 직장인 남녀</span></label>
+                    <label class="quiz-option"><input type="radio" name="quiz_8d" value="4"><span>20~30대 운동 관심 남성</span></label>
+                </div>
+                <div class="button-group">
+                    <button type="button" class="btn btn-prev" onclick="prevPage()">이전</button>
+                    <button type="button" class="btn btn-next" onclick="checkQuiz('8d', '2')">다음</button>
+                </div>
+            </div>
+
+            <div class="page condition-page" data-page="9d" data-condition="4">
+                <div id="audio-bar-9d" style="width:100%;margin-bottom:12px;"></div>
+                <div class="task-header">
+                    <div class="task-title">[작업 2: 게시물 컨셉 결정]</div>
+                    <div class="task-desc">AI가 제안한 컨셉 후보는 다음과 같습니다.</div>
+                </div>
+                <hr>
+                <div class="chat-container">
+                    <div class="chat-row">
+                        <div class="chat-profile">AI</div>
+                        <div class="chat-bubble">
+                            <p>이번 캠페인의 게시물 컨셉을 두 가지 제안드립니다.<br>
+                                A안: '가볍고 유머러스한 일상 공감형'<br>
+                                B안: '비타민 효능 중심 정보 전달형'</p>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="question">
+                    <div class="question-text">컨셉 결정 <span class="required">*</span></div>
+                    <div class="plan-choice">
+                        <label class="plan-option">
+                            <input type="radio" name="plan_9d" value="A안" required>
+                            <div class="plan-content">A안</div>
+                        </label>
+                        <label class="plan-option">
+                            <input type="radio" name="plan_9d" value="B안">
+                            <div class="plan-content">B안</div>
+                        </label>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button type="button" class="btn btn-prev" onclick="prevPage()">이전</button>
+                    <button type="button" class="btn btn-next" onclick="nextPage()">다음</button>
+                </div>
+            </div>
+
+            <div class="page condition-page" data-page="10d" data-condition="4">
+                <div id="audio-bar-10d" style="width:100%;margin-bottom:12px;"></div>
+                <div class="task-header">
+                    <div class="task-title">[작업 3: 홍보 매체 결정]</div>
+                    <div class="task-desc">AI가 제안한 홍보 매체 후보는 다음과 같습니다.</div>
+                </div>
+                <hr>
+                <div class="chat-container">
+                    <div class="chat-row">
+                        <div class="chat-profile">AI</div>
+                        <div class="chat-bubble">
+                            <p>이번 캠페인의 홍보 매체를 두 가지 제안드립니다.<br>
+                                A안: '인스타그램 릴스'<br>
+                                B안: '틱톡과 인스타그램'</p>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="question">
+                    <div class="question-text">홍보 매체 결정 <span class="required">*</span></div>
+                    <div class="plan-choice">
+                        <label class="plan-option">
+                            <input type="radio" name="plan_10d" value="A안" required>
+                            <div class="plan-content">A안</div>
+                        </label>
+                        <label class="plan-option">
+                            <input type="radio" name="plan_10d" value="B안">
+                            <div class="plan-content">B안</div>
+                        </label>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button type="button" class="btn btn-prev" onclick="prevPage()">이전</button>
+                    <button type="button" class="btn btn-next" onclick="nextPage()">다음</button>
+                </div>
+            </div>
+
+            <!-- ========== PAGE 12: 기획서 완성 ========== -->
+            <div class="page" data-page="12">
+                <div class="scenario-box" style="background: #f0fdf4; border-left: 4px solid #10b981;">
+                    <p style="font-weight: 700; font-size: 1.1em; margin-bottom: 12px;">[기획서 완성]</p>
+                    <p style="margin-bottom: 14px;">마케팅 기획서가 완성되었습니다.<br>기획서에는 다음 내용이 담겨 있습니다:</p>
+                    <ul style="list-style: none; padding: 0; margin: 0; line-height: 2.2;">
+                        <li id="brief-target" style="padding: 6px 0; border-bottom: 1px solid #bbf7d0;"></li>
+                        <li id="brief-concept" style="padding: 6px 0; border-bottom: 1px solid #bbf7d0;"></li>
+                        <li id="brief-media" style="padding: 6px 0;"></li>
+                    </ul>
+                </div>
+                <div class="button-group">
+                    <button type="button" class="btn btn-prev" onclick="prevPage()">이전</button>
+                    <button type="button" class="btn btn-next" onclick="nextPage()">다음</button>
+                </div>
+            </div>
+
+            <!-- ========== PAGE 13: 조작점검 ========== -->
+            <div class="page" data-page="13">
+                <div class="section-title">앞에서 AI와의 업무를 떠올리며 응답해 주시기 바랍니다.</div>
+                <table class="matrix-table">
+                    <thead>
+                        <tr>
+                            <th style="width:45%">문항</th>
+                            <th>1<br><small>전혀<br>그렇지<br>않다</small></th>
+                            <th>2<br><small>그렇지<br>않다</small></th>
+                            <th>3<br><small>약간<br>그렇지<br>않다</small></th>
+                            <th>4<br><small>보통이다</small></th>
+                            <th>5<br><small>약간<br>그렇다</small></th>
+                            <th>6<br><small>그렇다</small></th>
+                            <th>7<br><small>매우<br>그렇다</small></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>이번 업무에서 AI는 내 판단 없이 스스로 내용을 결정했다.</td>
+                            <td><input type="radio" name="auto_1" value="1" required></td>
+                            <td><input type="radio" name="auto_1" value="2"></td>
+                            <td><input type="radio" name="auto_1" value="3"></td>
+                            <td><input type="radio" name="auto_1" value="4"></td>
+                            <td><input type="radio" name="auto_1" value="5"></td>
+                            <td><input type="radio" name="auto_1" value="6"></td>
+                            <td><input type="radio" name="auto_1" value="7"></td>
+                        </tr>
+                        <tr>
+                            <td>이번 업무에서 기획서는 AI가 주도적으로 만들어낸 것이다.</td>
+                            <td><input type="radio" name="auto_2" value="1" required></td>
+                            <td><input type="radio" name="auto_2" value="2"></td>
+                            <td><input type="radio" name="auto_2" value="3"></td>
+                            <td><input type="radio" name="auto_2" value="4"></td>
+                            <td><input type="radio" name="auto_2" value="5"></td>
+                            <td><input type="radio" name="auto_2" value="6"></td>
+                            <td><input type="radio" name="auto_2" value="7"></td>
+                        </tr>
+                        <tr>
+                            <td>AI가 각 제안을 왜 했는지 이유를 알 수 있었다.</td>
+                            <td><input type="radio" name="trans_1" value="1" required></td>
+                            <td><input type="radio" name="trans_1" value="2"></td>
+                            <td><input type="radio" name="trans_1" value="3"></td>
+                            <td><input type="radio" name="trans_1" value="4"></td>
+                            <td><input type="radio" name="trans_1" value="5"></td>
+                            <td><input type="radio" name="trans_1" value="6"></td>
+                            <td><input type="radio" name="trans_1" value="7"></td>
+                        </tr>
+                        <tr>
+                            <td>AI의 제안이 어떤 근거로 이루어졌는지 이해할 수 있었다.</td>
+                            <td><input type="radio" name="trans_2" value="1" required></td>
+                            <td><input type="radio" name="trans_2" value="2"></td>
+                            <td><input type="radio" name="trans_2" value="3"></td>
+                            <td><input type="radio" name="trans_2" value="4"></td>
+                            <td><input type="radio" name="trans_2" value="5"></td>
+                            <td><input type="radio" name="trans_2" value="6"></td>
+                            <td><input type="radio" name="trans_2" value="7"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="button-group">
+                    <button type="button" class="btn btn-prev" onclick="prevPage()">이전</button>
+                    <button type="button" class="btn btn-next" onclick="nextPage()">다음</button>
+                </div>
+            </div>
+
+            <!-- ========== PAGE 14: 심리적 소유감 ========== -->
+            <div class="page" data-page="14">
+                <div class="section-title">앞에서 완성한 기획서를 떠올리며 응답해 주시기 바랍니다.</div>
+                <table class="matrix-table">
+                    <thead>
+                        <tr>
+                            <th style="width:45%">문항</th>
+                            <th>1<br><small>전혀<br>그렇지<br>않다</small></th>
+                            <th>2<br><small>그렇지<br>않다</small></th>
+                            <th>3<br><small>약간<br>그렇지<br>않다</small></th>
+                            <th>4<br><small>보통이다</small></th>
+                            <th>5<br><small>약간<br>그렇다</small></th>
+                            <th>6<br><small>그렇다</small></th>
+                            <th>7<br><small>매우<br>그렇다</small></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>이 기획서는 내가 만든 결과물이다.</td>
+                            <td><input type="radio" name="po_1" value="1" required></td>
+                            <td><input type="radio" name="po_1" value="2"></td>
+                            <td><input type="radio" name="po_1" value="3"></td>
+                            <td><input type="radio" name="po_1" value="4"></td>
+                            <td><input type="radio" name="po_1" value="5"></td>
+                            <td><input type="radio" name="po_1" value="6"></td>
+                            <td><input type="radio" name="po_1" value="7"></td>
+                        </tr>
+                        <tr>
+                            <td>이 기획안이 나의 것이라는 느낌이 든다.</td>
+                            <td><input type="radio" name="po_2" value="1" required></td>
+                            <td><input type="radio" name="po_2" value="2"></td>
+                            <td><input type="radio" name="po_2" value="3"></td>
+                            <td><input type="radio" name="po_2" value="4"></td>
+                            <td><input type="radio" name="po_2" value="5"></td>
+                            <td><input type="radio" name="po_2" value="6"></td>
+                            <td><input type="radio" name="po_2" value="7"></td>
+                        </tr>
+                        <tr>
+                            <td>이 기획안에 대해 강한 소유감을 느낀다.</td>
+                            <td><input type="radio" name="po_3" value="1" required></td>
+                            <td><input type="radio" name="po_3" value="2"></td>
+                            <td><input type="radio" name="po_3" value="3"></td>
+                            <td><input type="radio" name="po_3" value="4"></td>
+                            <td><input type="radio" name="po_3" value="5"></td>
+                            <td><input type="radio" name="po_3" value="6"></td>
+                            <td><input type="radio" name="po_3" value="7"></td>
+                        </tr>
+                        <tr>
+                            <td>이 기획서가 내 것이라는 생각이 들지 않는다.</td>
+                            <td><input type="radio" name="po_4" value="1" required></td>
+                            <td><input type="radio" name="po_4" value="2"></td>
+                            <td><input type="radio" name="po_4" value="3"></td>
+                            <td><input type="radio" name="po_4" value="4"></td>
+                            <td><input type="radio" name="po_4" value="5"></td>
+                            <td><input type="radio" name="po_4" value="6"></td>
+                            <td><input type="radio" name="po_4" value="7"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="button-group">
+                    <button type="button" class="btn btn-prev" onclick="prevPage()">이전</button>
+                    <button type="button" class="btn btn-next" onclick="nextPage()">다음</button>
+                </div>
+            </div>
+
+            <!-- ========== PAGE 15: 결과물 만족도 ========== -->
+            <div class="page" data-page="15">
+                <div class="section-title">앞에서 완성한 기획서를 떠올리며 응답해 주시기 바랍니다.</div>
+                <table class="matrix-table">
+                    <thead>
+                        <tr>
+                            <th style="width:45%">문항</th>
+                            <th>1<br><small>전혀<br>그렇지<br>않다</small></th>
+                            <th>2<br><small>그렇지<br>않다</small></th>
+                            <th>3<br><small>약간<br>그렇지<br>않다</small></th>
+                            <th>4<br><small>보통이다</small></th>
+                            <th>5<br><small>약간<br>그렇다</small></th>
+                            <th>6<br><small>그렇다</small></th>
+                            <th>7<br><small>매우<br>그렇다</small></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>나는 이 업무에서 작성한 기획서에 만족한다.</td>
+                            <td><input type="radio" name="satis_1" value="1" required></td>
+                            <td><input type="radio" name="satis_1" value="2"></td>
+                            <td><input type="radio" name="satis_1" value="3"></td>
+                            <td><input type="radio" name="satis_1" value="4"></td>
+                            <td><input type="radio" name="satis_1" value="5"></td>
+                            <td><input type="radio" name="satis_1" value="6"></td>
+                            <td><input type="radio" name="satis_1" value="7"></td>
+                        </tr>
+                        <tr>
+                            <td>기획서의 내용은 기대 수준을 충족한다.</td>
+                            <td><input type="radio" name="satis_2" value="1" required></td>
+                            <td><input type="radio" name="satis_2" value="2"></td>
+                            <td><input type="radio" name="satis_2" value="3"></td>
+                            <td><input type="radio" name="satis_2" value="4"></td>
+                            <td><input type="radio" name="satis_2" value="5"></td>
+                            <td><input type="radio" name="satis_2" value="6"></td>
+                            <td><input type="radio" name="satis_2" value="7"></td>
+                        </tr>
+                        <tr>
+                            <td>나는 내가 작성한 이 기획서가 마음에 든다.</td>
+                            <td><input type="radio" name="satis_3" value="1" required></td>
+                            <td><input type="radio" name="satis_3" value="2"></td>
+                            <td><input type="radio" name="satis_3" value="3"></td>
+                            <td><input type="radio" name="satis_3" value="4"></td>
+                            <td><input type="radio" name="satis_3" value="5"></td>
+                            <td><input type="radio" name="satis_3" value="6"></td>
+                            <td><input type="radio" name="satis_3" value="7"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="button-group">
+                    <button type="button" class="btn btn-prev" onclick="prevPage()">이전</button>
+                    <button type="button" class="btn btn-next" onclick="nextPage()">다음</button>
+                </div>
+            </div>
+
+            <!-- ========== PAGE 16: 부정 결과 ========== -->
+            <div class="page" data-page="16">
+                <div id="audio-bar-16" style="width:100%;margin-bottom:12px;"></div>
+                <div class="scenario-box">
+                    <p>당신이 제출한 기획서를 기반으로 캠페인을 진행했습니다.</p>
+                    .<br>.<br>.<br>
+                    <p style="font-weight:600; margin-bottom:15px;">[캠페인 중간 점검]</p>
+                    <p>캠페인 종료를 앞두고 진행된 중간 점검 결과, 게시물 평균 조회수는 목표치인 1만 회에 크게 못 미치는 저조한 수치를 기록하고 있습니다.<br>
+                        팀장님께 캠페인 전략 전반에 대한 재검토가 필요하다는 지적과 함께 부정적인 피드백을 받았습니다.<br>
+                        이로 인해 인턴 중간 평가에서 저조한 결과를 받았으며 최종 평가에서도 부정적인 결과를 받을 위기에 처했습니다.</p>
+                </div>
+                <div class="button-group">
+                    <button type="button" class="btn btn-prev" onclick="prevPage()">이전</button>
+                    <button type="button" class="btn btn-next" onclick="nextPage()">다음</button>
+                </div>
+            </div>
+
+            <!-- ========== PAGE 17: 책임 귀인 ========== -->
+            <div class="page" data-page="17">
+                <div class="section-title">앞에서의 업무를 떠올리며 응답해 주시기 바랍니다.</div>
+                <table class="matrix-table">
+                    <thead>
+                        <tr>
+                            <th style="width:45%">문항</th>
+                            <th>1<br><small>전혀<br>그렇지<br>않다</small></th>
+                            <th>2<br><small>그렇지<br>않다</small></th>
+                            <th>3<br><small>약간<br>그렇지<br>않다</small></th>
+                            <th>4<br><small>보통이다</small></th>
+                            <th>5<br><small>약간<br>그렇다</small></th>
+                            <th>6<br><small>그렇다</small></th>
+                            <th>7<br><small>매우<br>그렇다</small></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>이번 기획서를 잘 완성하는 것은 나의 책임이었다.</td>
+                            <td><input type="radio" name="attribute_1" value="1" required></td>
+                            <td><input type="radio" name="attribute_1" value="2"></td>
+                            <td><input type="radio" name="attribute_1" value="3"></td>
+                            <td><input type="radio" name="attribute_1" value="4"></td>
+                            <td><input type="radio" name="attribute_1" value="5"></td>
+                            <td><input type="radio" name="attribute_1" value="6"></td>
+                            <td><input type="radio" name="attribute_1" value="7"></td>
+                        </tr>
+                        <tr>
+                            <td>이번 기획서의 결과는 내 손을 떠난 일이었다.</td>
+                            <td><input type="radio" name="attribute_2" value="1" required></td>
+                            <td><input type="radio" name="attribute_2" value="2"></td>
+                            <td><input type="radio" name="attribute_2" value="3"></td>
+                            <td><input type="radio" name="attribute_2" value="4"></td>
+                            <td><input type="radio" name="attribute_2" value="5"></td>
+                            <td><input type="radio" name="attribute_2" value="6"></td>
+                            <td><input type="radio" name="attribute_2" value="7"></td>
+                        </tr>
+                        <tr>
+                            <td>이번 기획서의 성과는 주로 나에게 달려 있었다.</td>
+                            <td><input type="radio" name="attribute_3" value="1" required></td>
+                            <td><input type="radio" name="attribute_3" value="2"></td>
+                            <td><input type="radio" name="attribute_3" value="3"></td>
+                            <td><input type="radio" name="attribute_3" value="4"></td>
+                            <td><input type="radio" name="attribute_3" value="5"></td>
+                            <td><input type="radio" name="attribute_3" value="6"></td>
+                            <td><input type="radio" name="attribute_3" value="7"></td>
+                        </tr>
+                        <tr>
+                            <td>나는 이번 기획서를 잘 완성해야 할 의무감을 느꼈다.</td>
+                            <td><input type="radio" name="attribute_4" value="1" required></td>
+                            <td><input type="radio" name="attribute_4" value="2"></td>
+                            <td><input type="radio" name="attribute_4" value="3"></td>
+                            <td><input type="radio" name="attribute_4" value="4"></td>
+                            <td><input type="radio" name="attribute_4" value="5"></td>
+                            <td><input type="radio" name="attribute_4" value="6"></td>
+                            <td><input type="radio" name="attribute_4" value="7"></td>
+                        </tr>
+                        <tr>
+                            <td>이 기획서의 결과는 주로 내 결정에 따른 것이다.</td>
+                            <td><input type="radio" name="attribute_5" value="1" required></td>
+                            <td><input type="radio" name="attribute_5" value="2"></td>
+                            <td><input type="radio" name="attribute_5" value="3"></td>
+                            <td><input type="radio" name="attribute_5" value="4"></td>
+                            <td><input type="radio" name="attribute_5" value="5"></td>
+                            <td><input type="radio" name="attribute_5" value="6"></td>
+                            <td><input type="radio" name="attribute_5" value="7"></td>
+                        </tr>
+                        <tr>
+                            <td>이 기획서는 주로 AI의 제안에 따른 것이다.</td>
+                            <td><input type="radio" name="attribute_6" value="1" required></td>
+                            <td><input type="radio" name="attribute_6" value="2"></td>
+                            <td><input type="radio" name="attribute_6" value="3"></td>
+                            <td><input type="radio" name="attribute_6" value="4"></td>
+                            <td><input type="radio" name="attribute_6" value="5"></td>
+                            <td><input type="radio" name="attribute_6" value="6"></td>
+                            <td><input type="radio" name="attribute_6" value="7"></td>
+                        </tr>
+                        <tr>
+                            <td>이번 기획서의 결과에 대한 책임은 AI에게 있다.</td>
+                            <td><input type="radio" name="attribute_7" value="1" required></td>
+                            <td><input type="radio" name="attribute_7" value="2"></td>
+                            <td><input type="radio" name="attribute_7" value="3"></td>
+                            <td><input type="radio" name="attribute_7" value="4"></td>
+                            <td><input type="radio" name="attribute_7" value="5"></td>
+                            <td><input type="radio" name="attribute_7" value="6"></td>
+                            <td><input type="radio" name="attribute_7" value="7"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="button-group">
+                    <button type="button" class="btn btn-prev" onclick="prevPage()">이전</button>
+                    <button type="button" class="btn btn-next" onclick="nextPage()">다음</button>
+                </div>
+            </div>
+
+            <!-- ========== PAGE 18: 피드백 탐색 의도 ========== -->
+            <div class="page" data-page="18">
+                <div class="section-title">현재 진행 중인 마케팅 기획서와 관련하여 귀하는 다음과 같은 행동을 할 의향이 어느 정도입니까?</div>
+                <table class="matrix-table">
+                    <thead>
+                        <tr>
+                            <th style="width:45%">문항</th>
+                            <th>1<br><small>전혀<br>하지<br>않음</small></th>
+                            <th>2<br><small>거의<br>하지<br>않음</small></th>
+                            <th>3<br><small>보통</small></th>
+                            <th>4<br><small>자주<br>함</small></th>
+                            <th>5<br><small>매우<br>자주<br>함</small></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>상사가 어떤 성과에 대해 인정하는지 관찰하여, 내 기획안의 수준을 판단한다.</td>
+                            <td><input type="radio" name="fsi_1" value="1" required></td>
+                            <td><input type="radio" name="fsi_1" value="2"></td>
+                            <td><input type="radio" name="fsi_1" value="3"></td>
+                            <td><input type="radio" name="fsi_1" value="4"></td>
+                            <td><input type="radio" name="fsi_1" value="5"></td>
+                        </tr>
+                        <tr>
+                            <td>현재 내 기획안의 진행 상태나 결과를 다른 동료들의 것과 비교해 본다.</td>
+                            <td><input type="radio" name="fsi_2" value="1" required></td>
+                            <td><input type="radio" name="fsi_2" value="2"></td>
+                            <td><input type="radio" name="fsi_2" value="3"></td>
+                            <td><input type="radio" name="fsi_2" value="4"></td>
+                            <td><input type="radio" name="fsi_2" value="5"></td>
+                        </tr>
+                        <tr>
+                            <td>상사가 내 업무 성과를 어떻게 평가하는지 파악하기 위해, 나를 대하는 상사의 반응이나 태도에 주의를 기울인다.</td>
+                            <td><input type="radio" name="fsi_3" value="1" required></td>
+                            <td><input type="radio" name="fsi_3" value="2"></td>
+                            <td><input type="radio" name="fsi_3" value="3"></td>
+                            <td><input type="radio" name="fsi_3" value="4"></td>
+                            <td><input type="radio" name="fsi_3" value="5"></td>
+                        </tr>
+                        <tr>
+                            <td>주변 동료들에게 내 기획안의 보완점에 관한 의견을 물어본다.</td>
+                            <td><input type="radio" name="fsi_4" value="1" required></td>
+                            <td><input type="radio" name="fsi_4" value="2"></td>
+                            <td><input type="radio" name="fsi_4" value="3"></td>
+                            <td><input type="radio" name="fsi_4" value="4"></td>
+                            <td><input type="radio" name="fsi_4" value="5"></td>
+                        </tr>
+                        <tr>
+                            <td>상사에게 이번 기획안 성과에 대한 구체적인 피드백을 직접 요청한다.</td>
+                            <td><input type="radio" name="fsi_5" value="1" required></td>
+                            <td><input type="radio" name="fsi_5" value="2"></td>
+                            <td><input type="radio" name="fsi_5" value="3"></td>
+                            <td><input type="radio" name="fsi_5" value="4"></td>
+                            <td><input type="radio" name="fsi_5" value="5"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="button-group">
+                    <button type="button" class="btn btn-prev" onclick="prevPage()">이전</button>
+                    <button type="button" class="btn btn-next" onclick="nextPage()">다음</button>
+                </div>
+            </div>
+
+            <!-- ========== PAGE 19: 최종 제출 ========== -->
+            <div class="page" data-page="19">
+                <div class="scenario-box" style="text-align: center; background: #f1f5f9; border-left: 4px solid #10b981;">
+                    <p style="font-size: 1.1em; font-weight: 600;">설문이 완료되었습니다.</p>
+                    <p>아래 버튼을 누르면 응답이 안전하게 저장되고 종료됩니다.</p>
+                    <p>바쁘신 와중에 귀한 시간을 내어 참여해 주셔서 감사합니다.<br>
+                        본 설문에서 귀하가 경험하신 마케팅 인턴 시나리오와 캠페인 결과는 연구를 위해 설계된 가상의 상황으로 실제 업무 능력이나 성과 평가와는 전혀 무관합니다.<br>
+                        본 연구는 AI 도구와의 협업 과정에서 나타나는 사용자의 심리적 경험을 탐구하는 학술 연구입니다.<br>
+                        귀하의 응답은 익명으로 처리되며, 오직 학술적 목적으로만 활용됩니다.<br>
+                        연구와 관련한 문의 사항은 아래 연락처로 언제든지 연락 주시기 바랍니다.
+                        <hr>
+                        연구자: 배건희 (부산대학교 대학원 심리학과)<br>
+                        문의처: bae.2714@pusan.ac.kr<br>
+                        귀하의 소중한 응답이 인간과 AI가 함께 일하는 환경을 더 잘 이해하는 데 의미 있는 자료가 될 것입니다.<br>
+                        바쁘신 중에도 끝까지 참여해 주셔서 진심으로 감사드립니다.
+                    </p>
+                </div>
+                <div class="button-group">
+                    <button type="button" class="btn btn-prev" onclick="prevPage()">이전</button>
+                    <button type="button" class="btn btn-submit" id="final-submit-btn" onclick="submitSurvey()">최종 제출하기</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+    <!-- 미동의 안내 화면 -->
+    <div class="completion" id="no-consent">
+        <h2>연구 참여 미동의</h2>
+        <p>연구 참여에 동의하지 않으셨습니다.<br>
+            연구 참여 동의서에 '동의하지 않음'을 선택하셨으므로, 설문이 진행되지 않고 여기서 종료됩니다.<br>
+            귀하께서 응답하신 내용은 저장되거나 수집되지 않으니 안심하시기 바랍니다.<br>
+            혹시 실수로 클릭하셨다면 창을 새로고침하여 다시 시작하실 수 있습니다.<br>
+            소중한 시간을 내어주셔서 다시 한번 감사합니다.</p>
+        <p style="margin-top: 20px; color: #64748b;">창을 닫으셔도 됩니다.</p>
+    </div>
+
+    <!-- 제출 완료 화면 -->
+    <div class="completion" id="completion">
+        <h2>✅ 제출 완료!</h2>
+        <p>설문에 참여해 주셔서 감사합니다.</p>
+    </div>
+
+    <script>
+    const TOTAL_PAGES = 19;
+    let currentPage = 1;
+
+    const CONDITIONS = {
+        1: { code: 'condition1', name: '고자율고투명', pages: ['7a', '8a', '9a', '10a'] },
+        2: { code: 'condition2', name: '고자율저투명', pages: ['7b', '8b', '9b', '10b'] },
+        3: { code: 'condition3', name: '저자율고투명', pages: ['7c', '8c', '9c', '10c'] },
+        4: { code: 'condition4', name: '저자율저투명', pages: ['7d', '8d', '9d', '10d'] }
+    };
+
+    // 오디오 URL 맵 - 페이지 진입 시에만 로드
+    const AUDIO_MAP = {
+        '6':   'https://raw.githubusercontent.com/ldhl2714/audio/ldhl2714-patch-1/%EA%B3%B5%ED%86%B5%20%EC%95%88%EB%82%B4.wav',
+        '7':   'https://raw.githubusercontent.com/ldhl2714/audio/ldhl2714-patch-1/%EA%B3%B5%ED%86%B5%20%EC%8B%9C%EB%82%98%EB%A6%AC%EC%98%A4.wav',
+        '7a':  'https://raw.githubusercontent.com/ldhl2714/audio/ldhl2714-patch-1/%EA%B3%A0%EA%B3%A01.wav',
+        '9a':  'https://raw.githubusercontent.com/ldhl2714/audio/ldhl2714-patch-1/%EA%B3%A0%EA%B3%A02.wav',
+        '10a': 'https://raw.githubusercontent.com/ldhl2714/audio/ldhl2714-patch-1/%EA%B3%A0%EA%B3%A03.wav',
+        '7b':  'https://raw.githubusercontent.com/ldhl2714/audio/ldhl2714-patch-1/%EA%B3%A0%EC%A0%801.wav',
+        '9b':  'https://raw.githubusercontent.com/ldhl2714/audio/ldhl2714-patch-1/%EA%B3%A0%EC%A0%802.wav',
+        '10b': 'https://raw.githubusercontent.com/ldhl2714/audio/ldhl2714-patch-1/%EA%B3%A0%EC%A0%803.wav',
+        '7c':  'https://raw.githubusercontent.com/ldhl2714/audio/ldhl2714-patch-1/%EC%A0%80%EA%B3%A01.wav',
+        '9c':  'https://raw.githubusercontent.com/ldhl2714/audio/ldhl2714-patch-1/%EC%A0%80%EA%B3%A02.wav',
+        '10c': 'https://raw.githubusercontent.com/ldhl2714/audio/ldhl2714-patch-1/%EC%A0%80%EA%B3%A03.wav',
+        '7d':  'https://raw.githubusercontent.com/ldhl2714/audio/ldhl2714-patch-1/%EC%A0%80%EC%A0%801.wav',
+        '9d':  'https://raw.githubusercontent.com/ldhl2714/audio/ldhl2714-patch-1/%EC%A0%80%EC%A0%802.wav',
+        '10d': 'https://raw.githubusercontent.com/ldhl2714/audio/ldhl2714-patch-1/%EC%A0%80%EC%A0%803.wav',
+        '16':  'https://raw.githubusercontent.com/ldhl2714/audio/ldhl2714-patch-1/%EB%B6%80%EC%A0%95%20%EA%B2%B0%EA%B3%BC.wav'
+    };
+
+    const assignedConditionNum = Math.floor(Math.random() * 4) + 1;
+    const assignedCondition = CONDITIONS[assignedConditionNum];
+
+    console.log('할당된 조건:', assignedCondition.name);
+
+    // 단일 오디오 엘리먼트 - 동적으로 src 교체
+    const sharedAudio = new Audio();
+
+    function playAudioForPage(pageKey) {
+        sharedAudio.pause();
+        sharedAudio.src = '';
+
+        const src = AUDIO_MAP[String(pageKey)];
+        if (src) {
+            sharedAudio.src = src;
+            sharedAudio.load();
+            setTimeout(function() {
+                sharedAudio.play().catch(function() {});
+            }, 300);
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // 로딩 스피너 숨기기
+        var loadingEl = document.getElementById('loading-screen');
+        if (loadingEl) loadingEl.style.display = 'none';
+
+        // 현재 조건 외 페이지 제거
+        document.querySelectorAll('.condition-page').forEach(function(page) {
+            var pageCondition = parseInt(page.getAttribute('data-condition'));
+            if (pageCondition !== assignedConditionNum) {
+                page.remove();
+            }
+        });
+    });
+
+    function toggleDetail() {
+        var checkbox = document.getElementById('detail-checkbox');
+        var detail = document.getElementById('consent-detail');
+        if (checkbox.checked) {
+            detail.classList.add('show');
+        } else {
+            detail.classList.remove('show');
+        }
+    }
+
+    function checkConfirm(pageId) {
+        var checkbox = document.getElementById('confirm_' + pageId);
+        var nextBtn = document.getElementById('next_' + pageId);
+        if (nextBtn) {
+            nextBtn.disabled = !checkbox.checked;
+        }
+    }
+
+    function checkQuiz(pageId, correctAnswer) {
+        var selected = document.querySelector('input[name="quiz_' + pageId + '"]:checked');
+
+        if (!selected) {
+            alert('답을 선택해주세요.');
+            return;
+        }
+
+        if (selected.value === correctAnswer) {
+            nextPage();
+        } else {
+            alert('정답이 아닙니다. 내용을 다시 한 번 읽고 답해 주십시오.');
+            // 퀴즈 직전 시나리오 페이지로 이동 (8x → 7x)
+            var conditionSuffix = assignedCondition.pages[0].slice(-1); // 'a','b','c','d'
+            showConditionPage('7' + conditionSuffix);
+        }
+    }
+
+    function showConditionPage(condPageName) {
+        sharedAudio.pause();
+        sharedAudio.src = '';
+
+        document.querySelectorAll('.page').forEach(function(p) {
+            p.classList.remove('active');
+        });
+
+        var target = document.querySelector('.page[data-page="' + condPageName + '"]');
+        if (target) {
+            target.classList.add('active');
+            // currentPage는 8 (퀴즈 직전 조건페이지 = 논리 페이지 8 에 해당)
+            currentPage = 8;
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            playAudioForPage(condPageName);
+        }
+    }
+
+    function showPage(pageNum) {
+        sharedAudio.pause();
+        sharedAudio.src = '';
+
+        document.querySelectorAll('.page').forEach(function(p) {
+            p.classList.remove('active');
+        });
+
+        var targetPage;
+        var audioKey;
+
+        if (pageNum <= 7 || pageNum >= 12) {
+            // 공통 페이지
+            targetPage = document.querySelector('.page[data-page="' + pageNum + '"]');
+            audioKey = String(pageNum);
+        } else {
+            // 조건 페이지 (논리 8~11 → 조건배열 index 0~3)
+            var conditionPageIndex = pageNum - 8;
+            var conditionPageName = assignedCondition.pages[conditionPageIndex];
+            targetPage = document.querySelector('.page[data-page="' + conditionPageName + '"]');
+            audioKey = conditionPageName;
+        }
+
+        if (targetPage) {
+            targetPage.classList.add('active');
+            currentPage = pageNum;
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            if (pageNum === 12) {
+                updateBriefingPage();
+            }
+
+            playAudioForPage(audioKey);
+        }
+    }
+
+    function updateBriefingPage() {
+        var targetEl = document.getElementById('brief-target');
+        var conceptEl = document.getElementById('brief-concept');
+        var mediaEl   = document.getElementById('brief-media');
+
+        if (assignedConditionNum <= 2) {
+            targetEl.textContent = '주요 대상: 20대 후반~30대 초반 직장인 여성';
+            conceptEl.textContent = '게시물 컨셉: 가볍고 유머러스한 일상 공감형';
+            mediaEl.textContent   = '홍보 매체: 인스타그램 릴스 중심';
+        } else {
+            var suffix = assignedConditionNum === 3 ? 'c' : 'd';
+            var planTarget  = document.querySelector('input[name="plan_7' + suffix + '"]:checked');
+            var planConcept = document.querySelector('input[name="plan_9' + suffix + '"]:checked');
+            var planMedia   = document.querySelector('input[name="plan_10' + suffix + '"]:checked');
+
+            var targetMap  = { 'A안': '20대 후반~30대 초반 직장인 여성', 'B안': '건강에 관심있는 20~30대' };
+            var conceptMap = { 'A안': '가볍고 유머러스한 일상 공감형',   'B안': '비타민 효능 중심 정보 전달형' };
+            var mediaMap   = { 'A안': '인스타그램 릴스 중심',             'B안': '틱톡·인스타그램 병행' };
+
+            targetEl.textContent  = '주요 대상: '   + (planTarget  ? targetMap[planTarget.value]   : '-');
+            conceptEl.textContent = '게시물 컨셉: ' + (planConcept ? conceptMap[planConcept.value] : '-');
+            mediaEl.textContent   = '홍보 매체: '   + (planMedia   ? mediaMap[planMedia.value]     : '-');
+        }
+    }
+
+    function updateProgress() {
+        var percentage = (currentPage / TOTAL_PAGES) * 100;
+        document.getElementById('progress-fill').style.width = percentage + '%';
+        document.getElementById('progress-text').textContent = currentPage + ' / ' + TOTAL_PAGES;
+    }
+
+    function nextPage() {
+        var currentPageEl = document.querySelector('.page.active');
+
+        if (currentPage === 1) {
+            var consent = document.querySelector('input[name="consent"]:checked');
+            if (!consent) {
+                alert('연구 참여 동의 여부를 선택해주세요.');
+                return;
+            }
+            if (consent.value === '아니오') {
+                document.getElementById('survey-container').style.display = 'none';
+                document.getElementById('no-consent').classList.add('show');
+                return;
+            }
+        }
+
+        var requiredInputs = currentPageEl.querySelectorAll('[required]');
+        var allFilled = true;
+
+        requiredInputs.forEach(function(input) {
+            if (input.type === 'radio') {
+                var checked = currentPageEl.querySelector('input[name="' + input.name + '"]:checked');
+                if (!checked) allFilled = false;
+            } else {
+                if (!input.value) allFilled = false;
+            }
+        });
+
+        if (!allFilled) {
+            alert('필수 항목을 모두 입력해주세요.');
+            return;
+        }
+
+        if (currentPage < TOTAL_PAGES) {
+            showPage(currentPage + 1);
+        }
+    }
+
+    function prevPage() {
+        if (currentPage > 1) {
+            showPage(currentPage - 1);
+        }
+    }
+
+    // ★ 여기에 Apps Script 배포 URL을 붙여넣으세요
+    var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/여기에_배포_URL_입력/exec';
+
+    var isSubmitting = false;
+
+    async function submitSurvey() {
+        if (isSubmitting) return;
+
+        isSubmitting = true;
+        var submitBtn = document.getElementById('final-submit-btn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = '제출 중...';
+
+        var form = document.getElementById('survey-form');
+        var formData = new FormData(form);
+        var now = new Date();
+        var timestamp = now.toLocaleString('ko-KR', {
+            year: 'numeric', month: 'numeric', day: 'numeric',
+            hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true
+        });
+
+        var data = {
+            timestamp: timestamp,
+            condition_code: assignedCondition.code,
+            condition_name: assignedCondition.name
+        };
+
+        formData.forEach(function(value, key) {
+            data[key] = value;
+        });
+
+        var suffix = ['a','b','c','d'][assignedConditionNum - 1];
+
+        if (assignedConditionNum >= 3) {
+            data.plan_7  = data['plan_7'  + suffix] || '';
+            data.plan_9  = data['plan_9'  + suffix] || '';
+            data.plan_10 = data['plan_10' + suffix] || '';
+            delete data['plan_7'  + suffix];
+            delete data['plan_9'  + suffix];
+            delete data['plan_10' + suffix];
+        } else {
+            data.plan_7  = 'N/A';
+            data.plan_9  = 'N/A';
+            data.plan_10 = 'N/A';
+        }
+
+        data.quiz_answer = data['quiz_8' + suffix] || '';
+        delete data['quiz_8a']; delete data['quiz_8b'];
+        delete data['quiz_8c']; delete data['quiz_8d'];
+
+        console.log('제출할 데이터:', data);
+
+        try {
+            // GitHub Pages에서는 fetch로 Apps Script에 데이터 전송
+            var response = await fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',  // CORS 우회 (Apps Script 특성상 필요)
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            // no-cors 모드에서는 응답 확인 불가 → 성공으로 간주
+            document.getElementById('survey-container').style.display = 'none';
+            document.getElementById('completion').classList.add('show');
+
+        } catch (error) {
+            console.error('전송 실패:', error);
+            if (confirm('전송 중 오류가 발생했습니다. 다시 시도하시겠습니까?')) {
+                isSubmitting = false;
+                submitBtn.disabled = false;
+                submitBtn.textContent = '최종 제출하기';
+            } else {
+                alert('설문이 제출되지 않았습니다. 연구자에게 문의해주세요.');
+            }
+        }
+    }
+</script>
+
+</body>
+</html>
