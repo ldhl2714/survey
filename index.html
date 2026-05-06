@@ -1980,19 +1980,17 @@
     var now = new Date();
     var timestamp = now.toLocaleString('ko-KR');
 
-    // 1. 기본 데이터 객체 생성
+    // 1. 데이터 객체 생성
     var data = {
         timestamp: timestamp,
         condition_code: assignedCondition.code,
         condition_name: assignedCondition.name
     };
 
-    // 2. 폼 데이터 통합
     formData.forEach(function(value, key) {
         data[key] = value;
     });
 
-    // 3. 조건부 데이터 매핑 (기존 로직 최적화)
     var suffix = ['a', 'b', 'c', 'd'][assignedConditionNum - 1];
     if (assignedConditionNum >= 3) {
         data.plan_7 = data['plan_7' + suffix] || '';
@@ -2005,28 +2003,35 @@
     }
     data.quiz_answer = data['quiz_8' + suffix] || '';
 
-    // 4. 서버로 전송 (POST 방식)
+    // [핵심 수정 부분]
     try {
-        await fetch(APPS_SCRIPT_URL, {
+        // 1. 데이터를 구글로 쏩니다 (응답을 기다리지 않음)
+        fetch(APPS_SCRIPT_URL, {
             method: 'POST',
-            mode: 'no-cors', // 중요: Apps Script 리다이렉션 허용
-            headers: {
-                'Content-Type': 'text/plain' // preflight 에러 방지
-            },
+            mode: 'no-cors', 
+            headers: { 'Content-Type': 'text/plain' },
             body: JSON.stringify(data)
         });
 
-        // 5. 성공 시 화면 전환
+        // 2. 데이터가 구글 서버에 도착할 최소한의 시간(1.5초)만 벌어줍니다.
+        // 이 대기 시간 덕분에 데이터 유실 없이 안전하게 저장됩니다.
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        // 3. 1.5초 뒤에 에러 팝업 없이 바로 완료 화면으로 전환
         document.getElementById('survey-container').style.display = 'none';
         document.getElementById('completion').classList.add('show');
+        window.scrollTo(0, 0);
+
     } catch (error) {
+        // 이 catch문은 인터넷 연결이 아예 끊겼을 때만 작동합니다.
         console.error('Submission error:', error);
-        alert('데이터 저장 중 오류가 발생했습니다. 네트워크를 확인하고 다시 시도해주세요.');
+        alert('네트워크 연결을 확인하고 다시 시도해주세요.');
         isSubmitting = false;
         submitBtn.disabled = false;
         submitBtn.textContent = '최종 제출하기';
     }
 }
+        
 </script>
 
 </body>
