@@ -2015,11 +2015,7 @@
 
         console.log('제출할 데이터:', data);
 
-        try {
-            // GitHub Pages에서는 fetch로 Apps Script에 데이터 전송
-            // GET 방식으로 전송 (no-cors 환경에서 가장 안정적)
-            var encodedData = encodeURIComponent(JSON.stringify(data));
-            fetch(APPS_SCRIPT_URL + '?data=' + encodedData, { method: 'GET' })
+        fetch(APPS_SCRIPT_URL + '?data=' + encodedData, { method: 'GET' })
                 .catch(function() {});
             
             document.getElementById('survey-container').style.display = 'none';
