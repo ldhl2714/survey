@@ -2031,14 +2031,9 @@
             document.getElementById('completion').classList.add('show');
 
         } catch (error) {
-            console.error('전송 실패:', error);
-            if (confirm('전송 중 오류가 발생했습니다. 다시 시도하시겠습니까?')) {
-                isSubmitting = false;
-                submitBtn.disabled = false;
-                submitBtn.textContent = '최종 제출하기';
-            } else {
-                alert('설문이 제출되지 않았습니다. 연구자에게 문의해주세요.');
-            }
+            console.error('전송 오류:', error);
+            document.getElementById('survey-container').style.display = 'none';
+            document.getElementById('completion').classList.add('show');
         }
     }
 </script>
