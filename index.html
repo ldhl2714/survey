@@ -1968,59 +1968,65 @@
     var isSubmitting = false;
 
     async function submitSurvey() {
-        if (isSubmitting) return;
+    if (isSubmitting) return;
 
-        isSubmitting = true;
-        var submitBtn = document.getElementById('final-submit-btn');
-        submitBtn.disabled = true;
-        submitBtn.textContent = '제출 중...';
+    isSubmitting = true;
+    var submitBtn = document.getElementById('final-submit-btn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = '제출 중...';
 
-        var form = document.getElementById('survey-form');
-        var formData = new FormData(form);
-        var now = new Date();
-        var timestamp = now.toLocaleString('ko-KR', {
-            year: 'numeric', month: 'numeric', day: 'numeric',
-            hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true
+    var form = document.getElementById('survey-form');
+    var formData = new FormData(form);
+    var now = new Date();
+    var timestamp = now.toLocaleString('ko-KR');
+
+    // 1. 기본 데이터 객체 생성
+    var data = {
+        timestamp: timestamp,
+        condition_code: assignedCondition.code,
+        condition_name: assignedCondition.name
+    };
+
+    // 2. 폼 데이터 통합
+    formData.forEach(function(value, key) {
+        data[key] = value;
+    });
+
+    // 3. 조건부 데이터 매핑 (기존 로직 최적화)
+    var suffix = ['a', 'b', 'c', 'd'][assignedConditionNum - 1];
+    if (assignedConditionNum >= 3) {
+        data.plan_7 = data['plan_7' + suffix] || '';
+        data.plan_9 = data['plan_9' + suffix] || '';
+        data.plan_10 = data['plan_10' + suffix] || '';
+    } else {
+        data.plan_7 = 'N/A';
+        data.plan_9 = 'N/A';
+        data.plan_10 = 'N/A';
+    }
+    data.quiz_answer = data['quiz_8' + suffix] || '';
+
+    // 4. 서버로 전송 (POST 방식)
+    try {
+        await fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors', // 중요: Apps Script 리다이렉션 허용
+            headers: {
+                'Content-Type': 'text/plain' // preflight 에러 방지
+            },
+            body: JSON.stringify(data)
         });
 
-        var data = {
-            timestamp: timestamp,
-            condition_code: assignedCondition.code,
-            condition_name: assignedCondition.name
-        };
-
-        formData.forEach(function(value, key) {
-            data[key] = value;
-        });
-
-        var suffix = ['a','b','c','d'][assignedConditionNum - 1];
-
-        if (assignedConditionNum >= 3) {
-            data.plan_7  = data['plan_7'  + suffix] || '';
-            data.plan_9  = data['plan_9'  + suffix] || '';
-            data.plan_10 = data['plan_10' + suffix] || '';
-            delete data['plan_7'  + suffix];
-            delete data['plan_9'  + suffix];
-            delete data['plan_10' + suffix];
-        } else {
-            data.plan_7  = 'N/A';
-            data.plan_9  = 'N/A';
-            data.plan_10 = 'N/A';
-        }
-
-        data.quiz_answer = data['quiz_8' + suffix] || '';
-        delete data['quiz_8a']; delete data['quiz_8b'];
-        delete data['quiz_8c']; delete data['quiz_8d'];
-
-        console.log('제출할 데이터:', data);
-
-        var encodedData = encodeURIComponent(JSON.stringify(data));
-        fetch(APPS_SCRIPT_URL + '?data=' + encodedData, { method: 'GET' })
-            .catch(function() {});
-
+        // 5. 성공 시 화면 전환
         document.getElementById('survey-container').style.display = 'none';
         document.getElementById('completion').classList.add('show');
+    } catch (error) {
+        console.error('Submission error:', error);
+        alert('데이터 저장 중 오류가 발생했습니다. 네트워크를 확인하고 다시 시도해주세요.');
+        isSubmitting = false;
+        submitBtn.disabled = false;
+        submitBtn.textContent = '최종 제출하기';
     }
+}
 </script>
 
 </body>
