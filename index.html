@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>설문조사</title>
-    
     <style>
     body {
         font-family: 'Malgun Gothic', 'Noto Sans KR', sans-serif;
@@ -1964,7 +1963,7 @@
     }
 
     // ★ 여기에 Apps Script 배포 URL을 붙여넣으세요
-    var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyeEdSEUsO90qIW7iMFP7NHNlPtSGoEmgPdynEakcDDyue9vGSgf8XNWZ18cELQzpI-/exec';
+    var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/여기에_배포_URL_입력/exec';
 
     var isSubmitting = false;
 
@@ -2015,22 +2014,12 @@
 
         console.log('제출할 데이터:', data);
 
+        var encodedData = encodeURIComponent(JSON.stringify(data));
         fetch(APPS_SCRIPT_URL + '?data=' + encodedData, { method: 'GET' })
-                .catch(function() {});
-            
-            document.getElementById('survey-container').style.display = 'none';
-            document.getElementById('completion').classList.add('show');
-            });
+            .catch(function() {});
 
-            // no-cors 모드에서는 응답 확인 불가 → 성공으로 간주
-            document.getElementById('survey-container').style.display = 'none';
-            document.getElementById('completion').classList.add('show');
-
-        } catch (error) {
-            console.error('전송 오류:', error);
-            document.getElementById('survey-container').style.display = 'none';
-            document.getElementById('completion').classList.add('show');
-        }
+        document.getElementById('survey-container').style.display = 'none';
+        document.getElementById('completion').classList.add('show');
     }
 </script>
 
