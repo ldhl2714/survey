@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>설문조사</title>
+    
     <style>
     body {
         font-family: 'Malgun Gothic', 'Noto Sans KR', sans-serif;
@@ -2019,8 +2020,7 @@
             // GET 방식으로 전송 (no-cors 환경에서 가장 안정적)
             var encodedData = encodeURIComponent(JSON.stringify(data));
             var response = await fetch(APPS_SCRIPT_URL + '?data=' + encodedData, {
-                method: 'GET',
-                mode: 'no-cors'
+                method: 'GET'
             });
 
             // no-cors 모드에서는 응답 확인 불가 → 성공으로 간주
