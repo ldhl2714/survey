@@ -457,19 +457,87 @@
         text-align: left;
     }
 
+    /* 모바일 최적화 스타일 */
     @media (max-width: 768px) {
+        body {
+            padding: 10px; /* 여백 축소 */
+        }
+    
         .container {
-            padding: 20px;
+            padding: 20px 15px; /* 내부 여백 조정 */
+            border-radius: 0; /* 모바일에서는 꽉 차 보이게 */
         }
+    
+        /* 1. 표(Matrix Table) 모바일 대응 */
         .matrix-table {
-            font-size: 0.95em;
+            display: block; /* 테이블 구조를 블록으로 변경 */
+            border: none;
         }
-        .matrix-table th,
-        .matrix-table td {
-            padding: 8px 4px;
+    
+        .matrix-table thead {
+            display: none; /* 헤더(1~7 숫자) 숨기기 */
         }
-        .plan-choice {
+    
+        .matrix-table tbody, .matrix-table tr, .matrix-table td {
+            display: block;
+            width: 100%;
+        }
+    
+        .matrix-table tr {
+            margin-bottom: 30px; /* 문항 간 간격 */
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: #fff;
+            padding: 10px;
+        }
+    
+        .matrix-table td:first-child {
+            background: #f8fafc;
+            font-weight: bold;
+            border: none;
+            padding: 15px 10px;
+            text-align: left;
+        }
+    
+        /* 라디오 버튼들을 가로로 꽉 차게 정렬 */
+        .matrix-table td:not(:first-child) {
+            display: inline-flex;
+            width: calc(100% / 7 - 4px); /* 7점 척도일 경우 7등분 */
+            padding: 10px 0;
+            border: none;
+            justify-content: center;
+            position: relative;
+        }
+    
+        /* 모바일에서 숫자가 안 보이면 선택이 어려우므로 작은 숫자 표시 (선택사항) */
+        .matrix-table td:not(:first-child)::before {
+            content: attr(data-label); /* HTML에 data-label 추가 시 사용 가능 */
+            display: block;
+            font-size: 0.7em;
+            margin-bottom: 5px;
+        }
+    
+        /* 2. 가로 나열 버튼(동의 예/아니오) 세로 배치 */
+        .radio-horizontal {
             flex-direction: column;
+            gap: 10px;
+        }
+    
+        .radio-horizontal label {
+            justify-content: center;
+            padding: 15px;
+        }
+    
+        /* 3. 시나리오 대화창(Chat Bubble) 너비 조정 */
+        .chat-bubble {
+            max-width: 100%; /* 모바일에서는 더 넓게 사용 */
+            padding: 15px;
+        }
+    
+        /* 4. 입력창 및 버튼 크기 키우기 (터치 편의성) */
+        input[type="text"], input[type="number"], .btn {
+            font-size: 16px; /* iOS 자동 줌 방지 */
+            padding: 15px;
         }
     }
 </style>
