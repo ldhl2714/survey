@@ -456,67 +456,93 @@
         max-width: 85%;
         text-align: left;
     }
-
     @media (max-width: 768px) {
-        /* 기존 테이블 레이아웃 해제 */
-        .matrix-table thead { display: none; } /* 상단 숫자 행 숨김 */
+            /* 1. 전체 컨테이너 여백 축소: 본문이 더 넓어집니다 */
+            body {
+                padding: 10px; 
+            }
+            .container {
+                padding: 20px 12px; /* 좌우 40px -> 12px로 대폭 축소 */
+                border-radius: 5px;
+            }
+    
+            /* 2. 제목 글자 크기 조정 */
+            h1 { font-size: 1.4em !important; }
+    
+            /* 3. 테이블 구조 해제 및 카드형 전환 */
+            .matrix-table thead { display: none; } 
+            
+            .matrix-table tr {
+                display: flex;
+                flex-direction: column;
+                margin-bottom: 25px; 
+                border: 1px solid #e5e7eb;
+                border-radius: 10px;
+                background: #fff;
+                overflow: hidden;
+                padding-bottom: 45px; /* 하단 텍스트 공간 */
+                position: relative;
+            }
         
-        .matrix-table tr {
-            display: flex;
-            flex-direction: column;
-            margin-bottom: 35px; /* 문항 간 간격 확대 */
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            background: #fff;
-            overflow: hidden;
-        }
+            .matrix-table td:first-child {
+                background: #f8fafc;
+                padding: 15px 12px;
+                text-align: left;
+                border: none;
+                border-bottom: 1px solid #eee;
+                font-size: 0.9em;
+                line-height: 1.4;
+                width: 100% !important;
+                box-sizing: border-box;
+            }
+        
+            /* 4. 라디오 버튼 영역이 화면 꽉 차게 */
+            .matrix-table td:not(:first-child) {
+                display: inline-flex;
+                flex: 1;
+                padding: 15px 0;
+                justify-content: center;
+                border: none;
+                margin: 0;
+            }
     
-        .matrix-table td:first-child {
-            background: #f8fafc;
-            padding: 15px;
-            text-align: left;
-            border: none;
-            border-bottom: 1px solid #eee;
-            font-size: 0.95em;
-            line-height: 1.4;
-        }
+            /* 5. 하단 가이드 문구 여백 조정 */
+            .matrix-table tr::after {
+                content: '전혀 그렇지 않다               매우 그렇다';
+                position: absolute;
+                bottom: 12px;
+                left: 0;
+                right: 0;
+                text-align: center;
+                font-size: 0.7em;
+                color: #94a3b8;
+                letter-spacing: -0.5px;
+                word-spacing: 20px; /* 핸드폰 폭에 맞춰 단어 간격 조정 */
+                pointer-events: none;
+            }
+        
+            /* 6. 버튼 및 입력창 크기 최적화 */
+            .btn {
+                padding: 12px 15px;
+                font-size: 1em;
+            }
+            .radio-horizontal {
+                flex-direction: column; /* 예/아니오 버튼 세로 배치 */
+                gap: 10px;
+            }
+            .radio-horizontal label {
+                padding: 12px;
+                justify-content: center;
+            }
     
-        /* 라디오 버튼들이 담긴 영역 */
-        .matrix-table td:not(:first-child) {
-            display: inline-flex;
-            flex: 1;
-            padding: 15px 0;
-            justify-content: center;
-            border: none;
+            /* 7. 채팅 말풍선 너비 조정 */
+            .chat-bubble {
+                max-width: 90%;
+                padding: 15px;
+            }
         }
+
     
-        /* 선택 영역 전체를 감싸는 컨테이너 (tr 안의 td들 정렬) */
-        .matrix-table tr {
-            position: relative;
-            padding-bottom: 40px; /* 하단 텍스트 공간 */
-        }
-    
-        /* 모바일 전용: 1번 아래와 7번 아래에 설명 강제 삽입 */
-        .matrix-table tr::after {
-            content: '전혀 그렇지 않다               매우 그렇다';
-            position: absolute;
-            bottom: 15px;
-            left: 0;
-            right: 0;
-            text-align: center;
-            font-size: 0.75em;
-            color: #64748b;
-            letter-spacing: -0.5px;
-            word-spacing: 50px; /* 숫자 간격에 맞춰 텍스트를 양 끝으로 벌림 */
-            pointer-events: none;
-        }
-    
-        /* 라디오 버튼 크기 최적화 */
-        .matrix-table input[type="radio"] {
-            width: 22px;
-            height: 22px;
-        }
-    }
 </style>
 
 </head>
