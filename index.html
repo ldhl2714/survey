@@ -681,8 +681,11 @@
             <div class="page" data-page="2">
                 <div class="question">
                     <div class="question-text">SONA 아이디 (6자리 숫자, 선택사항)</div>
-                    <input type="text" name="sona_id" maxlength="6" pattern="[0-9]{6}">
-                </div>
+                    <input type="text" name="sona_id" maxlength="6" pattern="[0-9]{6}" 
+                        placeholder="예: 123456"
+                       oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                       title="SONA 아이디는 정확히 6자리 숫자여야 합니다">
+                    </div>    
 
                 <div class="question">
                     <div class="question-text">성별 <span class="required">*</span></div>
@@ -700,7 +703,10 @@
 
                 <div class="question">
                     <div class="question-text">연령 (만) <span class="required">*</span></div>
-                    <input type="number" name="age" min="18" max="100" required>
+                    <input type="number" name="age" min="18" max="100" required
+                           placeholder="예: 25"
+                           oninput="if(this.value && this.value < 18) this.value = 18; if(this.value > 100) this.value = 100;"
+                           title="나이는 18세 이상 100세 이하만 입력 가능합니다">
                 </div>
 
                 <div class="button-group">
