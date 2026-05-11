@@ -548,15 +548,7 @@
 </head>
 
 <body>
-<!--테스트용 버튼 -->
-<div id="test-controls" style="position:fixed; top:10px; right:10px; z-index:10000; background:white; padding:10px; border:2px solid red;">
-    <div style="font-weight:bold; margin-bottom:5px;">🔧 테스트 모드</div>
-    <button onclick="location.href='?condition=1'">조건1</button>
-    <button onclick="location.href='?condition=2'">조건2</button>
-    <button onclick="location.href='?condition=3'">조건3</button>
-    <button onclick="location.href='?condition=4'">조건4</button>
-    <button onclick="location.href=location.pathname">랜덤</button>
-</div>
+
     <!-- 로딩 스피너 -->
     <div id="loading-screen" style="
         position:fixed; inset:0; background:white;
@@ -1860,7 +1852,13 @@
         '16':  'https://raw.githubusercontent.com/ldhl2714/audio/main/부정%20시나리오.mp3'
     };
 
-    const assignedConditionNum = Math.floor(Math.random() * 4) + 1;
+    // URL에서 조건 가져오기 (예: ?condition=3)
+    const urlParams = new URLSearchParams(window.location.search);
+    const manualCondition = urlParams.get('condition');
+    
+    const assignedConditionNum = manualCondition && manualCondition >= 1 && manualCondition <= 4
+        ? parseInt(manualCondition)
+        : Math.floor(Math.random() * 4) + 1;
     const assignedCondition = CONDITIONS[assignedConditionNum];
 
     console.log('할당된 조건:', assignedCondition.name);
