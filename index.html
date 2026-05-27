@@ -1996,13 +1996,33 @@
                 page.remove();
             }
         });
-        // ★ [여기서부터 새로 추가된 핵심 코드] PC 헤더 문구를 모바일 양끝 가이드로 실시간 복사
+        // ===================================================
+        // ★ [보정 완료] 글자 꼬임 현상을 완벽히 차단하는 정밀 텍스트 추출 로직
+        // ===================================================
         document.querySelectorAll('.matrix-table').forEach(function(table) {
             var headers = table.querySelectorAll('thead th:not(:first-child)');
             if (headers.length > 0) {
-                var leftText = headers[0].innerText.replace(/\n/g, ' ').trim();
-                var rightText = headers[headers.length - 1].innerText.replace(/\n/g, ' ').trim();
-    
+                
+                // 1. 첫 번째 헤더와 마지막 헤더에서 숫자를 제외한 실제 가이드 텍스트만 정밀 추출
+                var leftHeader = headers[0];
+                var rightHeader = headers[headers.length - 1];
+                
+                // small 태그가 있으면 small 태그 안의 글자만 가져오고, 없으면 전체에서 숫자 제거
+                var leftSmall = leftHeader.querySelector('small');
+                var rightSmall = rightHeader.querySelector('small');
+                
+                var leftText = leftSmall ? leftSmall.innerText : leftHeader.innerText;
+                var rightText = rightSmall ? rightSmall.innerText : rightHeader.innerText;
+                
+                // 줄바꿈 지우고 깔끔하게 단어만 정렬 (예: "전혀 그렇지 않다")
+                leftText = leftText.replace(/[\r\n\t]/g, '').replace(/\s+/g, ' ').trim();
+                rightText = rightText.replace(/[\r\n\t]/g, '').replace(/\s+/g, ' ').trim();
+                
+                // 앞쪽에 혹시 남아있을지 모를 숫자(1, 7 등)와 공백 완전 제거
+                leftText = leftText.replace(/^[0-9]\s*/, '');
+                rightText = rightText.replace(/^[0-9]\s*/, '');
+                
+                // 2. 추출한 텍스트를 모바일 화면의 data 속성으로 안전하게 배달
                 table.querySelectorAll('tbody tr').forEach(function(tr) {
                     tr.setAttribute('data-left-guide', leftText);
                     tr.setAttribute('data-right-guide', rightText);
