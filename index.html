@@ -827,7 +827,7 @@
             <!-- ========== PAGE 3: AI 사용 경험 ========== -->
             <div class="page" data-page="3">
                 <div class="section-title">귀하의 AI 경험에 대한 아래의 질문에 응답해주세요.</div>
-                <table class="matrix-table scale-7">
+                <table class="matrix-table scale-7" data-left="전혀 그렇지 않다" data-right="매우 그렇다">
                     <thead>
                         <tr>
                             <th style="width: 50%;">문항</th>
@@ -882,7 +882,7 @@
             <!-- ========== PAGE 4: 자기효능감 ========== -->
             <div class="page" data-page="4">
                 <div class="section-title">아래의 문항을 읽고 귀하께 해당하는 번호로 응답해주세요.</div>
-                <table class="matrix-table scale-4">
+                <table class="matrix-table scale-4" data-left="전혀 아니다" data-right="매우 그렇다">
                     <thead>
                         <tr>
                             <th style="width:70%">문항</th>
@@ -1528,7 +1528,7 @@
             <!-- ========== PAGE 13: 조작점검 ========== -->
             <div class="page" data-page="13">
                 <div class="section-title">앞에서 AI와 함께 수행한 업무를 떠올리며 아래의 문항에 응답해주세요.</div>
-                <table class="matrix-table scale-7">
+                <table class="matrix-table scale-7" data-left="전혀 그렇지 않다" data-right="매우 그렇다">
                     <thead>
                         <tr>
                             <th style="width:45%">문항</th>
@@ -1593,7 +1593,7 @@
             <!-- ========== PAGE 14: 심리적 소유감 ========== -->
             <div class="page" data-page="14">
                 <div class="section-title">앞에서 완성한 기획서를 떠올리며 아래의 문항에 응답해주세요.</div>
-                <table class="matrix-table scale-7">
+                <table class="matrix-table scale-7" data-left="전혀 그렇지 않다" data-right="매우 그렇다">
                     <thead>
                         <tr>
                             <th style="width:45%">문항</th>
@@ -1658,7 +1658,7 @@
             <!-- ========== PAGE 15: 결과물 만족도 ========== -->
             <div class="page" data-page="15">
                 <div class="section-title">앞에서 완성한 기획서를 떠올리며 아래의 문항에 응답해주세요.</div>
-                <table class="matrix-table scale-7">
+                <table class="matrix-table scale-7" data-left="전혀 그렇지 않다" data-right="매우 그렇다">
                     <thead>
                         <tr>
                             <th style="width:45%">문항</th>
@@ -1728,7 +1728,7 @@
             <!-- ========== PAGE 17: 책임 귀인 ========== -->
             <div class="page" data-page="17">
                 <div class="section-title">앞에서의 업무를 떠올리며 응답해주세요.</div>
-                <table class="matrix-table scale-7">
+                <table class="matrix-table scale-7" data-left="전혀 그렇지 않다" data-right="매우 그렇다">
                     <thead>
                         <tr>
                             <th style="width:45%">문항</th>
@@ -1823,7 +1823,7 @@
             <!-- ========== PAGE 18: 피드백 탐색 의도 ========== -->
             <div class="page" data-page="18">
                 <div class="section-title">귀하는 아래의 행동을 얼마나 자주 할 의향이 있습니까?</div>
-                <table class="matrix-table scale-5">
+                <table class="matrix-table scale-5" data-left="매우 드물게" data-right="매우 자주">
                     <thead>
                         <tr>
                             <th style="width:45%">문항</th>
@@ -2000,36 +2000,14 @@
         // ★ [보정 완료] 글자 꼬임 현상을 완벽히 차단하는 정밀 텍스트 추출 로직
         // ===================================================
         document.querySelectorAll('.matrix-table').forEach(function(table) {
-            var headers = table.querySelectorAll('thead th:not(:first-child)');
-            if (headers.length > 0) {
-                
-                var leftHeader = headers[0];
-                var rightHeader = headers[headers.length - 1];
-                
-                var leftSmall = leftHeader.querySelector('small');
-                var rightSmall = rightHeader.querySelector('small');
-                
-                var leftText = leftSmall ? leftSmall.innerText : leftHeader.innerText;
-                var rightText = rightSmall ? rightSmall.innerText : rightHeader.innerText;
-                
-                // 1. 공백 및 줄바꿈 정리
-                leftText = leftText.replace(/[\r\n\t]/g, ' ').replace(/\s+/g, ' ').trim();
-                rightText = rightText.replace(/[\r\n\t]/g, ' ').replace(/\s+/g, ' ').trim();
-                
-                // 2. 숫자로 시작하면 숫자 제거 (예: "1 전혀" -> "전혀")
-                leftText = leftText.replace(/^[0-9]\s*/, '');
-                rightText = rightText.replace(/^[0-9]\s*/, '');
-
-                // 3. [핵심 교정] 첫 번째 헤더 문장 속에 우측 극단 문구(매우 그렇다 등)가 포함되어 있다면 삭제
-                // (PC 화면용 숨은 텍스트가 뭉쳐서 수집되는 현상을 물리적으로 차단합니다.)
-                if (leftText.includes(rightText)) {
-                    leftText = leftText.replace(rightText, '').trim();
-                }
-                
-                // 4. 추출된 최종 텍스트를 모바일 data 속성에 안전하게 매칭
-                table.querySelectorAll('tbody tr').forEach(function(tr) {
-                    tr.setAttribute('data-left-guide', leftText);
-                    tr.setAttribute('data-right-guide', rightText);
+            // HTML 태그에 직접 적어둔 글자를 정직하게 가져옵니다.
+            var leftText = table.getAttribute('data-left') || '';
+            var rightText = table.getAttribute('data-right') || '';
+            
+            // 각 줄(tr)에 오염되지 않은 순수한 단어 주입
+            table.querySelectorAll('tbody tr').forEach(function(tr) {
+                tr.setAttribute('data-left-guide', leftText);
+                tr.setAttribute('data-right-guide', rightText);
                 });
             }
         });
