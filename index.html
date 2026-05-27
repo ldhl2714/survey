@@ -196,7 +196,9 @@
             cursor: pointer;
         }
     
-        /* 테이블 공통 양식 */
+        /* ===================================================
+           ★ PC 화면 (일반 화면) 척도 헤더 텍스트 균일화 교정
+           =================================================== */
         .matrix-table {
             width: 100%;
             border-collapse: collapse;
@@ -205,12 +207,19 @@
     
         .matrix-table th {
             background: #f1f5f9;
-            padding: 12px 6px;
+            padding: 10px 4px;
             text-align: center;
-            font-size: 0.95em;
+            font-size: 0.85em; /* 폰트 크기 일괄 통일 */
             font-weight: 600;
             border: 1px solid #e5e7eb;
-            line-height: 1.3;
+            line-height: 1.4;
+        }
+    
+        /* 헤더 안의 <small> 태그들의 크기와 줄바꿈 강제 통일 */
+        .matrix-table th small {
+            font-size: 0.85em !important;
+            display: block;
+            white-space: nowrap; /* 글자가 좁아서 혼자 줄바꿈되는 현상 방지 */
         }
     
         .matrix-table td {
@@ -459,22 +468,14 @@
         }
     
         /* ===================================================
-           ★ 모바일 반응형 웹 최적화 영역 (여기서부터 전면 수정)
+           ★ 모바일 반응형 웹 최적화 영역 (4, 5, 7점 분기 교정)
            =================================================== */
         @media (max-width: 768px) {
-            body {
-                padding: 10px; 
-            }
-            
-            .container {
-                padding: 20px 14px; 
-                border-radius: 6px;
-            }
-    
+            body { padding: 10px; }
+            .container { padding: 20px 14px; border-radius: 6px; }
             h1 { font-size: 1.35em !important; }
             h2 { font-size: 1.15em !important; }
     
-            /* 1. 리커트 척도 테이블 해제 및 모바일 카드형 대전환 */
             .matrix-table, 
             .matrix-table thead, 
             .matrix-table tbody, 
@@ -486,21 +487,19 @@
                 box-sizing: border-box;
             }
     
-            .matrix-table thead { 
-                display: none; /* 헤더 제거 */
-            } 
+            .matrix-table thead { display: none; } 
     
             .matrix-table tr {
-                margin-bottom: 30px; 
+                margin-bottom: 35px; 
                 border: 1px solid #e2e8f0;
                 border-radius: 8px;
                 background: #ffffff;
                 box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-                padding: 0;
+                padding: 0 0 45px 0; /* 하단 앵커 텍스트 공간 확보 */
+                position: relative;
                 overflow: hidden;
             }
     
-            /* 질문 문항 스타일 */
             .matrix-table td:first-child {
                 background: #f8fafc;
                 padding: 16px 14px;
@@ -511,38 +510,39 @@
                 color: #1e293b;
                 font-weight: 600;
                 line-height: 1.5;
+                margin-bottom: 10px;
             }
     
-            /* 라디오 버튼들을 담은 td들을 가로 한 줄로 균등 배치 */
             .matrix-table td:not(:first-child) {
                 display: inline-flex;
-                width: 14.28% !important; /* 7점 척도 분할 */
                 float: left;
-                padding: 10px 0;
+                padding: 5px 0;
                 margin: 0;
                 border: none;
                 justify-content: center;
                 align-items: center;
-                position: relative;
             }
     
-            /* 뒤틀림 방지용 float 해제 */
+            /* 척도별 가로 너비 동적 분할 */
+            .matrix-table.scale-7 td:not(:first-child) { width: 14.28% !important; }
+            .matrix-table.scale-5 td:not(:first-child) { width: 20% !important; }
+            .matrix-table.scale-4 td:not(:first-child) { width: 25% !important; }
+    
             .matrix-table tr::after {
                 content: "";
                 display: table;
                 clear: both;
             }
     
-            /* 2. 손가락 터치 피로도 축소를 위한 라디오 버튼 커스텀화 */
+            /* 모바일 사각형 라디오 숫자 버튼 */
             .matrix-table input[type="radio"] {
                 appearance: none;
                 -webkit-appearance: none;
-                width: 34px;
-                height: 34px;
+                width: 36px;
+                height: 36px;
                 border: 2px solid #cbd5e1;
                 border-radius: 6px;
                 background-color: #fff;
-                position: relative;
                 outline: none;
                 margin: 0;
                 display: flex;
@@ -551,7 +551,7 @@
                 transition: all 0.15s ease;
             }
     
-            /* 라디오 버튼 안에 숫자를 강제로 심어 가독성 독립 확보 */
+            /* 각 칸에 맞는 숫자 부여 */
             .matrix-table td:nth-child(2) input[type="radio"]::before { content: "1"; }
             .matrix-table td:nth-child(3) input[type="radio"]::before { content: "2"; }
             .matrix-table td:nth-child(4) input[type="radio"]::before { content: "3"; }
@@ -561,12 +561,11 @@
             .matrix-table td:nth-child(8) input[type="radio"]::before { content: "7"; }
     
             .matrix-table input[type="radio"]::before {
-                font-size: 0.9em;
+                font-size: 0.95em;
                 font-weight: 700;
                 color: #64748b;
             }
     
-            /* 체크되었을 때 사각형 박스 자체를 파랗게 반전 */
             .matrix-table input[type="radio"]:checked {
                 background-color: #2563eb;
                 border-color: #2563eb;
@@ -575,68 +574,36 @@
                 color: #ffffff;
             }
     
-            /* 3. 모바일 하단 가이드 가시성 보정 (5점 척도용 카드 레이아웃 예외 처리) */
-            /* 가로 폭 좁은 곳에서 텍스트가 깨지지 않게 문항 아래 고정 표기 추가 */
+            /* ===================================================
+               ★ 요구사항: 모바일 하단 양극단 가이드 라벨 배치
+               =================================================== */
+            .matrix-table.scale-7 tr::before { content: "전혀 그렇지 않다                                매우 그렇다"; }
+            .matrix-table.scale-5 tr::before { content: "매우 드물게                                      매우 자주"; }
+            .matrix-table.scale-4 tr::before { content: "전혀 아니다                                      매우 그렇다"; }
+    
             .matrix-table tr::before {
                 display: block;
-                padding: 8px 14px 0 14px;
-                font-size: 0.75em;
-                color: #94a3b8;
-                text-align: initial;
-            }
-            /* 각 조건별 척도 개수에 상관없이 직관적으로 표기되도록 구조 변경 */
-            .matrix-table tbody tr {
-                padding-bottom: 25px;
-                position: relative;
-            }
-            /* 텍스트 앵커 추가 */
-            .matrix-table tr::after {
-                content: '← 전혀 아니다 / 매우 그렇다 →';
-                display: block;
                 position: absolute;
-                bottom: 6px;
-                left: 0;
-                right: 0;
-                text-align: center;
+                bottom: 12px;
+                left: 14px;
+                right: 14px;
                 font-size: 0.75em;
-                color: #94a3b8;
-                font-weight: 500;
+                color: #64748b;
+                font-weight: 600;
+                /* 정밀한 양끝 정렬 양극단 매칭 기법 */
+                text-align: justify;
+                text-align-last: justify;
+                word-break: break-all;
+                pointer-events: none;
             }
     
-            /* 4. 기타 UI 요소 모바일 최적화 */
-            .btn {
-                padding: 14px 15px;
-                font-size: 1em;
-            }
-            
-            .radio-horizontal {
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .radio-horizontal label {
-                padding: 14px;
-                justify-content: center;
-            }
-    
-            .plan-choice {
-                flex-direction: column;
-                gap: 12px;
-                width: 100%;
-            }
-    
-            .plan-content {
-                width: 100%;
-                box-sizing: border-box;
-                min-height: 50px;
-                padding: 12px;
-            }
-    
-            .chat-bubble {
-                max-width: 82%;
-                padding: 14px 18px;
-                font-size: 0.95em;
-            }
+            /* 기타 모바일 UI 단추 정렬 */
+            .btn { padding: 14px 15px; font-size: 1em; }
+            .radio-horizontal { flex-direction: column; gap: 10px; }
+            .radio-horizontal label { padding: 14px; justify-content: center; }
+            .plan-choice { flex-direction: column; gap: 12px; width: 100%; }
+            .plan-content { width: 100%; box-sizing: border-box; min-height: 50px; padding: 12px; }
+            .chat-bubble { max-width: 82%; padding: 14px 18px; font-size: 0.95em; }
         }
     </style>
 
@@ -818,7 +785,7 @@
             <!-- ========== PAGE 3: AI 사용 경험 ========== -->
             <div class="page" data-page="3">
                 <div class="section-title">귀하의 AI 경험에 대한 아래의 질문에 응답해주세요.</div>
-                <table class="matrix-table">
+                <table class="matrix-table scale-7">
                     <thead>
                         <tr>
                             <th style="width: 50%;">문항</th>
@@ -873,7 +840,7 @@
             <!-- ========== PAGE 4: 자기효능감 ========== -->
             <div class="page" data-page="4">
                 <div class="section-title">아래의 문항을 읽고 귀하께 해당하는 번호로 응답해주세요.</div>
-                <table class="matrix-table">
+                <table class="matrix-table scale-4">
                     <thead>
                         <tr>
                             <th style="width:70%">문항</th>
@@ -1519,7 +1486,7 @@
             <!-- ========== PAGE 13: 조작점검 ========== -->
             <div class="page" data-page="13">
                 <div class="section-title">앞에서 AI와 함께 수행한 업무를 떠올리며 아래의 문항에 응답해주세요.</div>
-                <table class="matrix-table">
+                <table class="matrix-table scale-7">
                     <thead>
                         <tr>
                             <th style="width:45%">문항</th>
@@ -1584,7 +1551,7 @@
             <!-- ========== PAGE 14: 심리적 소유감 ========== -->
             <div class="page" data-page="14">
                 <div class="section-title">앞에서 완성한 기획서를 떠올리며 아래의 문항에 응답해주세요.</div>
-                <table class="matrix-table">
+                <table class="matrix-table scale-7">
                     <thead>
                         <tr>
                             <th style="width:45%">문항</th>
@@ -1649,7 +1616,7 @@
             <!-- ========== PAGE 15: 결과물 만족도 ========== -->
             <div class="page" data-page="15">
                 <div class="section-title">앞에서 완성한 기획서를 떠올리며 아래의 문항에 응답해주세요.</div>
-                <table class="matrix-table">
+                <table class="matrix-table scale-7">
                     <thead>
                         <tr>
                             <th style="width:45%">문항</th>
@@ -1719,7 +1686,7 @@
             <!-- ========== PAGE 17: 책임 귀인 ========== -->
             <div class="page" data-page="17">
                 <div class="section-title">앞에서의 업무를 떠올리며 응답해주세요.</div>
-                <table class="matrix-table">
+                <table class="matrix-table scale-7">
                     <thead>
                         <tr>
                             <th style="width:45%">문항</th>
@@ -1814,7 +1781,7 @@
             <!-- ========== PAGE 18: 피드백 탐색 의도 ========== -->
             <div class="page" data-page="18">
                 <div class="section-title">귀하는 아래의 행동을 얼마나 자주 할 의향이 있습니까?</div>
-                <table class="matrix-table">
+                <table class="matrix-table scale-5">
                     <thead>
                         <tr>
                             <th style="width:45%">문항</th>
