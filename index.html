@@ -2003,26 +2003,30 @@
             var headers = table.querySelectorAll('thead th:not(:first-child)');
             if (headers.length > 0) {
                 
-                // 1. 첫 번째 헤더와 마지막 헤더에서 숫자를 제외한 실제 가이드 텍스트만 정밀 추출
                 var leftHeader = headers[0];
                 var rightHeader = headers[headers.length - 1];
                 
-                // small 태그가 있으면 small 태그 안의 글자만 가져오고, 없으면 전체에서 숫자 제거
                 var leftSmall = leftHeader.querySelector('small');
                 var rightSmall = rightHeader.querySelector('small');
                 
                 var leftText = leftSmall ? leftSmall.innerText : leftHeader.innerText;
                 var rightText = rightSmall ? rightSmall.innerText : rightHeader.innerText;
                 
-                // 줄바꿈 지우고 깔끔하게 단어만 정렬 (예: "전혀 그렇지 않다")
-                leftText = leftText.replace(/[\r\n\t]/g, '').replace(/\s+/g, ' ').trim();
-                rightText = rightText.replace(/[\r\n\t]/g, '').replace(/\s+/g, ' ').trim();
+                // 1. 공백 및 줄바꿈 정리
+                leftText = leftText.replace(/[\r\n\t]/g, ' ').replace(/\s+/g, ' ').trim();
+                rightText = rightText.replace(/[\r\n\t]/g, ' ').replace(/\s+/g, ' ').trim();
                 
-                // 앞쪽에 혹시 남아있을지 모를 숫자(1, 7 등)와 공백 완전 제거
+                // 2. 숫자로 시작하면 숫자 제거 (예: "1 전혀" -> "전혀")
                 leftText = leftText.replace(/^[0-9]\s*/, '');
                 rightText = rightText.replace(/^[0-9]\s*/, '');
+
+                // 3. [핵심 교정] 첫 번째 헤더 문장 속에 우측 극단 문구(매우 그렇다 등)가 포함되어 있다면 삭제
+                // (PC 화면용 숨은 텍스트가 뭉쳐서 수집되는 현상을 물리적으로 차단합니다.)
+                if (leftText.includes(rightText)) {
+                    leftText = leftText.replace(rightText, '').trim();
+                }
                 
-                // 2. 추출한 텍스트를 모바일 화면의 data 속성으로 안전하게 배달
+                // 4. 추출된 최종 텍스트를 모바일 data 속성에 안전하게 매칭
                 table.querySelectorAll('tbody tr').forEach(function(tr) {
                     tr.setAttribute('data-left-guide', leftText);
                     tr.setAttribute('data-right-guide', rightText);
