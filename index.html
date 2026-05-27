@@ -527,11 +527,22 @@
             .matrix-table.scale-7 td:not(:first-child) { width: 14.28% !important; }
             .matrix-table.scale-5 td:not(:first-child) { width: 20% !important; }
             .matrix-table.scale-4 td:not(:first-child) { width: 25% !important; }
-    
-            .matrix-table tr::after {
-                content: "";
-                display: table;
-                clear: both;
+                
+            /* 5. 모바일 하단 양극단 가이드 라벨 배치 */
+            .matrix-table tr::before {
+                content: attr(data-left-guide) " \A0\A0\A0\A0\A0\A0 " attr(data-right-guide);
+                display: block;
+                position: absolute;
+                bottom: 12px;
+                left: 14px;
+                right: 14px;
+                font-size: 0.75em;
+                color: #475569;
+                font-weight: 600;
+                text-align: justify;
+                text-align-last: justify;
+                word-break: break-all;
+                pointer-events: none;
             }
     
             /* 모바일 사각형 라디오 숫자 버튼 */
@@ -1952,6 +1963,19 @@
             var pageCondition = parseInt(page.getAttribute('data-condition'));
             if (pageCondition !== assignedConditionNum) {
                 page.remove();
+            }
+        });
+        // ★ [여기서부터 새로 추가된 핵심 코드] PC 헤더 문구를 모바일 양끝 가이드로 실시간 복사
+        document.querySelectorAll('.matrix-table').forEach(function(table) {
+            var headers = table.querySelectorAll('thead th:not(:first-child)');
+            if (headers.length > 0) {
+                var leftText = headers[0].innerText.replace(/\n/g, ' ').trim();
+                var rightText = headers[headers.length - 1].innerText.replace(/\n/g, ' ').trim();
+    
+                table.querySelectorAll('tbody tr').forEach(function(tr) {
+                    tr.setAttribute('data-left-guide', leftText);
+                    tr.setAttribute('data-right-guide', rightText);
+                });
             }
         });
     });
