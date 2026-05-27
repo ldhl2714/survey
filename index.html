@@ -537,45 +537,45 @@
                 border-radius: 8px;
                 background: #ffffff;
                 box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-                /* 하단 공간을 조금 더 넓혀서 글자가 겹치지 않게 안전거리 확보 */
-                padding: 0 0 52px 0; 
+                padding: 0 0 52px 0; /* 하단 공간 넓혀서 안전거리 확보 */
                 position: relative;
                 overflow: hidden;
             }
-    
+            
             /* [왼쪽 극단 값] 무조건 맨 왼쪽 구석 고정 */
             .matrix-table tr::before {
                 content: attr(data-left-guide);
                 display: block;
                 position: absolute;
                 bottom: 14px;
-                left: 16px; /* 왼쪽 벽에 붙임 */
-                width: 45%; /* 글자가 길어져도 중간을 안 넘어가게 제한 */
+                left: 16px; 
+                width: 45%; 
                 font-size: 0.75em;
                 color: #475569;
                 font-weight: 600;
-                text-align: left; /* 왼쪽 정렬 */
+                text-align: left; 
                 pointer-events: none;
-                white-space: normal; /* 모바일 폭이 좁으면 알아서 이쁘게 줄바꿈 */
+                white-space: normal; 
                 line-height: 1.3;
             }
-    
+            
             /* [오른쪽 극단 값] 무조건 맨 오른쪽 구석 고정 */
-            .matrix-table tr::after {
+            .matrix-table td:first-child::after {
                 content: attr(data-right-guide);
                 display: block;
                 position: absolute;
                 bottom: 14px;
-                right: 16px; /* 오른쪽 벽에 붙임 */
-                width: 45%; /* 글자가 길어져도 중간을 안 넘어가게 제한 */
+                right: 16px; 
+                width: 45%; 
                 font-size: 0.75em;
                 color: #475569;
                 font-weight: 600;
-                text-align: right; /* 오른쪽 정렬 */
+                text-align: right; 
                 pointer-events: none;
-                white-space: normal; /* 모바일 폭이 좁으면 알아서 이쁘게 줄바꿈 */
+                white-space: normal; 
                 line-height: 1.3;
-            }    
+                z-index: 10;
+            }
             /* 모바일 사각형 라디오 숫자 버튼 */
             .matrix-table input[type="radio"] {
                 appearance: none;
@@ -1996,22 +1996,17 @@
                 page.remove();
             }
         });
-        // ===================================================
-        // ★ [보정 완료] 글자 꼬임 현상을 완벽히 차단하는 정밀 텍스트 추출 로직
-        // ===================================================
-        document.querySelectorAll('.matrix-table').forEach(function(table) {
-            // HTML 태그에 직접 적어둔 글자를 정직하게 가져옵니다.
-            var leftText = table.getAttribute('data-left') || '';
-            var rightText = table.getAttribute('data-right') || '';
-            
-            // 각 줄(tr)에 오염되지 않은 순수한 단어 주입
-            table.querySelectorAll('tbody tr').forEach(function(tr) {
-                tr.setAttribute('data-left-guide', leftText);
-                tr.setAttribute('data-right-guide', rightText);
+        // HTML에 직접 적어둔 data-left, data-right 글자를 정직하게 가져와 매칭합니다.
+            document.querySelectorAll('.matrix-table').forEach(function(table) {
+                var leftText = table.getAttribute('data-left') || '';
+                var rightText = table.getAttribute('data-right') || '';
+                
+                table.querySelectorAll('tbody tr').forEach(function(tr) {
+                    tr.setAttribute('data-left-guide', leftText);
+                    tr.setAttribute('data-right-guide', rightText);
                 });
-            }
-        });
-    });
+            });
+        }); // 중괄호 오타 없이 깔끔하게 종료
 
     function toggleDetail() {
         var checkbox = document.getElementById('detail-checkbox');
