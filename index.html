@@ -2000,6 +2000,8 @@
         if (selected.value === correctAnswer) {
             nextPage();
         } else {
+            // ★ 3. 오답 시 횟수 1 증가
+            quiz_attempts += 1;
             alert('정답이 아닙니다. 내용을 다시 한 번 읽고 답해 주십시오.');
             // 퀴즈 직전 시나리오 페이지로 이동 (8x → 7x)
             var conditionSuffix = assignedCondition.pages[0].slice(-1); // 'a','b','c','d'
@@ -2229,6 +2231,8 @@
 
     // 1. 데이터 객체 생성
     var data = {
+        type: 'final_submit', // 진입 로그와 구분하기 위함
+        session_id: sessionId, // ★ 진입 로그와 매칭하기 위한 세션 ID 기록
         timestamp: timestamp,
         condition_code: assignedCondition.code,
         condition_name: assignedCondition.name
