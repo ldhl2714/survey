@@ -1886,7 +1886,10 @@
     <script>
     const TOTAL_PAGES = 19;
     let currentPage = 1;
-
+    // ★ 1. 퀴즈 재시도 횟수 변수 및 세션 ID 추가
+    let quiz_attempts = 0; 
+    const sessionId = 'session_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+    let isEntryLogged = false; // 진입 로그 중복 전송 방지용
     const CONDITIONS = {
         1: { code: 'condition1', name: '고자율고투명', pages: ['7a', '8a', '9a', '10a'] },
         2: { code: 'condition2', name: '고자율저투명', pages: ['7b', '8b', '9b', '10b'] },
@@ -2055,7 +2058,22 @@
             if (pageNum === 12) {
                 updateBriefingPage();
             }
-
+            if (pageNum === 7 && !isEntryLogged) {
+                    isEntryLogged = true;
+                    fetch(APPS_SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'text/plain' },
+                        body: JSON.stringify({
+                            type: 'entry_log',       // 최종 제출과 구분하기 위한 태그
+                            session_id: sessionId,
+                            condition_code: assignedCondition.code,
+                            condition_name: assignedCondition.name,
+                            timestamp: new Date().toLocaleString('ko-KR')
+                        })
+                    }).catch(e => console.log('Entry log failed'));
+            }
+            
             playAudioForPage(audioKey);
         }
     }
