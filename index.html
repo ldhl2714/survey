@@ -1886,10 +1886,10 @@
     <script>
     const TOTAL_PAGES = 19;
     let currentPage = 1;
-    // ★ 1. 퀴즈 재시도 횟수 변수 및 세션 ID 추가
+    
+    // ★ 오직 퀴즈 재시도 횟수 변수 하나만 추가했습니다.
     let quiz_attempts = 0; 
-    const sessionId = 'session_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
-    let isEntryLogged = false; // 진입 로그 중복 전송 방지용
+
     const CONDITIONS = {
         1: { code: 'condition1', name: '고자율고투명', pages: ['7a', '8a', '9a', '10a'] },
         2: { code: 'condition2', name: '고자율저투명', pages: ['7b', '8b', '9b', '10b'] },
@@ -1969,7 +1969,7 @@
                 tr.setAttribute('data-right-guide', rightText);
             });
         });
-    }); // 오타 없이 깔끔하게 종료
+    }); 
         
     function toggleDetail() {
         var checkbox = document.getElementById('detail-checkbox');
@@ -2000,7 +2000,7 @@
         if (selected.value === correctAnswer) {
             nextPage();
         } else {
-            // ★ 3. 오답 시 횟수 1 증가
+            // ★ 오답 시 횟수 1 증가
             quiz_attempts += 1;
             alert('정답이 아닙니다. 내용을 다시 한 번 읽고 답해 주십시오.');
             // 퀴즈 직전 시나리오 페이지로 이동 (8x → 7x)
@@ -2060,21 +2060,6 @@
             if (pageNum === 12) {
                 updateBriefingPage();
             }
-            if (pageNum === 7 && !isEntryLogged) {
-                    isEntryLogged = true;
-                    fetch(APPS_SCRIPT_URL, {
-                        method: 'POST',
-                        mode: 'no-cors',
-                        headers: { 'Content-Type': 'text/plain' },
-                        body: JSON.stringify({
-                            type: 'entry_log',       // 최종 제출과 구분하기 위한 태그
-                            session_id: sessionId,
-                            condition_code: assignedCondition.code,
-                            condition_name: assignedCondition.name,
-                            timestamp: new Date().toLocaleString('ko-KR')
-                        })
-                    }).catch(e => console.log('Entry log failed'));
-            }
             
             playAudioForPage(audioKey);
         }
@@ -2101,7 +2086,7 @@
 
             targetEl.textContent  = '주요 대상: '   + (planTarget  ? targetMap[planTarget.value]   : '-');
             conceptEl.textContent = '게시물 컨셉: ' + (planConcept ? conceptMap[planConcept.value] : '-');
-            mediaEl.textContent   = '홍보 매체: '   + (planMedia   ? mediaMap[planMedia.value]     : '-');
+            mediaEl.textContent   = '홍보 매체: '   + (planMedia   ? mediaMap[planMedia.value]      : '-');
         }
     }
 
@@ -2148,6 +2133,7 @@
             showPage(currentPage + 1);
         }
     }
+
     // PAGE 2 전용 유효성 검사 함수
     function validatePageTwo() {
         const ageInput = document.getElementById('age_input');
@@ -2212,7 +2198,7 @@
     }
 
     // ★ 여기에 Apps Script 배포 URL을 붙여넣으세요
-    var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxs2ujUgGK1Z_t8sreiR2-8XsECcH42c0w45edsghRsPbK0SgkRuhi-UpoDuiRKFNq5/exec';
+    var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwONH6ZSTmT9XqICHr8Mg3x63yqp_T8M8tEvBM-fqprpADqAO9Ze4tQrcTFGk_cMbts/exec';
 
     var isSubmitting = false;
 
@@ -2229,14 +2215,12 @@
     var now = new Date();
     var timestamp = now.toLocaleString('ko-KR');
 
-    // 1. 데이터 객체 생성
+    // ★ 불필요한 type, session_id를 제거하고 순수 데이터만 남겼습니다.
     var data = {
-        type: 'final_submit', // 진입 로그와 구분하기 위함
-        session_id: sessionId, // ★ 진입 로그와 매칭하기 위한 세션 ID 기록
         timestamp: timestamp,
         condition_code: assignedCondition.code,
         condition_name: assignedCondition.name,
-        quiz_attempts: quiz_attempts // ★ 4. 최종 오답 횟수 데이터에 포함
+        quiz_attempts: quiz_attempts 
     };
 
     formData.forEach(function(value, key) {
@@ -2255,7 +2239,6 @@
     }
     data.quiz_answer = data['quiz_8' + suffix] || '';
 
-    // [핵심 수정 부분]
     try {
         // 1. 데이터를 구글로 쏩니다 (응답을 기다리지 않음)
         fetch(APPS_SCRIPT_URL, {
