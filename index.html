@@ -2158,7 +2158,7 @@
     
   // 2. SONA ID 검사 (필수)
         const sonaVal = sonaInput.value.trim();
-        const sonaRegEx = /^\d{5}$/;
+        const sonaRegEx = /^\d+$/;
         if (!sonaRegEx.test(sonaVal)) {
             sonaError.style.display = 'block';
             sonaInput.style.borderColor = '#ef4444';
